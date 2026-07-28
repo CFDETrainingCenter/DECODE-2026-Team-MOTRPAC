@@ -1,6 +1,10 @@
 # Mac objects
 .DS_Store
 
+# plolty files
+/plots/*plotly_files/
+
+
 # R objects
 .Rproj.user
 .Rhistory
