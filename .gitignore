@@ -1,0 +1,8 @@
+# Mac objects
+.DS_Store
+
+# R objects
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
