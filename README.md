@@ -32,6 +32,12 @@ Secondary Research Question:
 
 ## Workflow 
 
+<p align="center">
+  <img src="images/Pipeline.svg" alt="MoTrPAC analysis workflow" width="250">
+</p>
+
+## Set Up
+
 
 ## Raw Data Files and Data Dictionaries
 
