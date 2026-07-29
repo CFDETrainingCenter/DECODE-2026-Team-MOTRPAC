@@ -1,0 +1,11 @@
+sex,group,official_outlier,n
+female,control,FALSE,5
+female,1w,FALSE,5
+female,2w,FALSE,5
+female,4w,FALSE,5
+female,8w,FALSE,5
+male,control,FALSE,5
+male,1w,FALSE,5
+male,2w,FALSE,5
+male,4w,FALSE,5
+male,8w,FALSE,5

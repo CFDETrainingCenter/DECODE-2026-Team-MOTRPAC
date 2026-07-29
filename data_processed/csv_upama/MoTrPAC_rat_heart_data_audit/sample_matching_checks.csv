@@ -1,0 +1,6 @@
+check,passed
+Raw and normalized sample sets identical,TRUE
+All normalized samples matched to PHENO,TRUE
+All non-outlier samples are in full normalized data,TRUE
+All sex values present,TRUE
+All group values present,TRUE

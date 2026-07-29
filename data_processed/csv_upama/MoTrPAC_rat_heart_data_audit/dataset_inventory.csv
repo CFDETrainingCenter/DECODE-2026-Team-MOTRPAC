@@ -1,0 +1,8 @@
+item,value
+Raw RNA-seq feature rows,32883
+Raw RNA-seq sample columns,50
+Normalized RNA-seq feature rows,14445
+Normalized RNA-seq sample columns,50
+Normalized samples after official outlier removal,50
+Official heart RNA-seq outliers,0
+Installed data-package version,2.0.0
