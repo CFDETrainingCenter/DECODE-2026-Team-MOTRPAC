@@ -255,6 +255,5 @@ prot_fgsea <- fgsea2(pathways = msigdb_pathways_selected, stats = prot_ranks)
 
 
 ## Export FGSEA data ----
-write_rds(prot_fgsea,
-          file = here("data_processed", "watsc_proteomics_fgsea.rda"),
-          compress = "bz2", version = 3)
+saveRDS(prot_fgsea,
+        file = here("data_processed", "watsc_proteomics_fgsea.rds"))

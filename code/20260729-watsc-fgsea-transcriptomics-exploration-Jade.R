@@ -186,9 +186,8 @@ fgsea_results <- annotated_fgsea_results %>%
 
 
 # Export file ----
-write_rds(fgsea_results,
-          file = here("data_processed", "watsc_transcriptomics_fgsea.rda"),
-          compress = "bz2", version = 3)
+saveRDS(fgsea_results,
+        file = here("data_processed", "watsc_transcriptomics_fgsea.rds"))
 
 
 # Sanity check -----
