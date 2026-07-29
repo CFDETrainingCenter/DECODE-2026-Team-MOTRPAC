@@ -1,0 +1,10 @@
+item,value
+Input raw features,32883
+Input RNA-seq samples,50
+Official outliers removed,0
+Features after filterByExpr,14575
+Normalized-table feature count for comparison,14445
+Design-matrix columns,14
+Contrast families,3
+Total contrasts,13
+Data package version,2.0.0

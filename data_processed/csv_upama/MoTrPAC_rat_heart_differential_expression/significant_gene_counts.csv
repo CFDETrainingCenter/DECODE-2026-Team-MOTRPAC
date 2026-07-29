@@ -1,0 +1,14 @@
+contrast_group,contrast,plain_language,positive_logFC_means,tested_features,FDR05_total,FDR05_positive,FDR05_negative,FDR05_FC1.5_total,minimum_P_value,minimum_global_FDR
+MvF_SED,M_SED - F_SED,Sedentary male heart versus sedentary female heart,Higher expression in sedentary males,14575,870,575,295,91,8.235009524276035e-27,1.2002526381632322e-22
+MvF_exercise_response,(M_1W - M_SED) - (F_1W - F_SED),Male versus female training response at 1 week,Larger 1-week training response in males,14575,0,0,0,0,6.243501356219276e-5,0.6066602151126396
+MvF_exercise_response,(M_2W - M_SED) - (F_2W - F_SED),Male versus female training response at 2 weeks,Larger 2-week training response in males,14575,0,0,0,0,1.992777855562797e-5,0.5115376173825472
+MvF_exercise_response,(M_4W - M_SED) - (F_4W - F_SED),Male versus female training response at 4 weeks,Larger 4-week training response in males,14575,0,0,0,0,1.0750866202613595e-4,0.6659227711679561
+MvF_exercise_response,(M_8W - M_SED) - (F_8W - F_SED),Male versus female training response at 8 weeks,Larger 8-week training response in males,14575,0,0,0,0,2.3764062280543367e-6,0.13854448309556783
+trained_vs_SED,F_1W - F_SED,Female heart: 1 week versus sedentary,Higher expression after 1 week in females,14575,14,7,7,0,2.5210813225661302e-6,0.0033071319008412614
+trained_vs_SED,F_2W - F_SED,Female heart: 2 weeks versus sedentary,Higher expression after 2 weeks in females,14575,61,37,24,1,4.5502213787447823e-8,2.631266093795356e-4
+trained_vs_SED,F_4W - F_SED,Female heart: 4 weeks versus sedentary,Higher expression after 4 weeks in females,14575,59,39,20,5,1.5894264285095743e-6,0.0024385147574238993
+trained_vs_SED,F_8W - F_SED,Female heart: 8 weeks versus sedentary,Higher expression after 8 weeks in females,14575,105,74,31,7,2.7278230029458487e-8,2.1204277476232397e-4
+trained_vs_SED,M_1W - M_SED,Male heart: 1 week versus sedentary,Higher expression after 1 week in males,14575,28,22,6,2,1.7118412991295944e-6,0.002558983275365522
+trained_vs_SED,M_2W - M_SED,Male heart: 2 weeks versus sedentary,Higher expression after 2 weeks in males,14575,78,57,21,5,6.234640564072882e-8,3.160691694656078e-4
+trained_vs_SED,M_4W - M_SED,Male heart: 4 weeks versus sedentary,Higher expression after 4 weeks in males,14575,52,42,10,2,4.336582629392408e-8,2.631266093795356e-4
+trained_vs_SED,M_8W - M_SED,Male heart: 8 weeks versus sedentary,Higher expression after 8 weeks in males,14575,256,159,97,23,2.8942371705601103e-11,3.3746805408730887e-6
