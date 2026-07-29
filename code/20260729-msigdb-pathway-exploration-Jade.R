@@ -156,6 +156,13 @@ msigdb_pathways_selected %>%
 
 
 # Export msigdb_pathways_selected ----
-write_csv(msigdb_pathways_selected, 
-          here("data_msigdb", "msigdb_pathways.csv"))
+# IMPORTANT! can't save as a csv file bc of the list-column
+save(msigdb_pathways_selected,
+     file = here("data_msigdb", "msigdb_pathways.rda"),
+     version = 3, compress = "bzip2")
+
+
+
+# Clear environment ----
+rm(list = ls())
 
