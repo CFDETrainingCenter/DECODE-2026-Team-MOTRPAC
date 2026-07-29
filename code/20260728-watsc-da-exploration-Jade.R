@@ -2,7 +2,7 @@
 # Examine the code used for the sexual-dimorphism analysis in the WAT-SC
 # Article: https://www.nature.com/articles/s42255-023-00959-9
 # GitHub: https://github.com/MoTrPAC/MotrpacRatTraining6moWATData/
-# Try to replicate the DE analysis
+# Try to replicate the DE analysis --- output: volcano plot (Figure 2A)
 
 
 # Load library ----
