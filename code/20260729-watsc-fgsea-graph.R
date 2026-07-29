@@ -7,7 +7,7 @@ rna_fgsea <- readRDS(here("data_processed", "watsc_transcriptomics_fgsea.rds"))
 protein_fgsea <- readRDS(here("data_processed", "watsc_proteomics_fgsea.rds"))
 
 
-# Join pathways tested in both omics
+# Join pathways tested in both omics ----
 # use inner_join -- it would require NES in both the transcriptome and proteome
 shared_pathway_results <- inner_join(
   rna_fgsea %>% select(pathway, gs_subcat, gs_description, rna_padj = padj, rna_NES = NES),
@@ -28,7 +28,6 @@ shared_pathway_results <- inner_join(
 shared_pathway_results %>%
   filter(significant_in_both == TRUE) %>%
   count(gs_subcat, significant_in_both)
-
 
 
 # Figure 2B: transcriptomics vs proteomic NES ----
@@ -52,5 +51,74 @@ ggsave(here("plots", "watsc_rna_protein_NES_MvF_SED_scatterplot.png"),
 
 
 
+# Select the terms displayed in Figure 2C ----
+# first rank signficant pathways by the mean absolute NES across the two omics
+# within each GO category, retain every non-Q1 pathway and then fill the remaining positions, 
+# up to approximately 10, with Q1 terms.
+
+ranked_significant_pathways <- shared_pathway_results %>%
+  filter(significant_in_both) %>%
+  mutate(mean_absolute_NES = (abs(protein_NES) + abs(rna_NES)) / 2) %>%
+  group_by(gs_subcat) %>%
+  arrange(desc(mean_absolute_NES), .by_group = TRUE) %>%
+  mutate(number_outside_Q1 = sum(quadrant != "Q1"),
+         number_of_Q1_terms_to_keep = 10L - number_outside_Q1) %>%
+  group_by(gs_subcat, quadrant) %>%
+  mutate(rank_within_quadrant = row_number()) %>%
+  ungroup()
+
+selected_figure_2c_pathways <- ranked_significant_pathways %>%
+  filter((quadrant != "Q1" & rank_within_quadrant <= number_outside_Q1) |
+           (quadrant == "Q1" & rank_within_quadrant <= number_of_Q1_terms_to_keep)) %>%
+  pull(pathway)
+
+
+
+# Figure 2C: NES values for selected pathways -----
+shared_pathway_results_selected <- shared_pathway_results %>%
+  filter(pathway %in% selected_figure_2c_pathways) %>%
+  select(pathway, gs_subcat, gs_description, rna_NES, protein_NES) %>%
+  pivot_longer(cols = c(rna_NES, protein_NES), names_to = "omic", values_to = "NES") %>%
+  mutate(omic = recode(omic, "rna_NES" = "TRNSCRPT", "protein_NES" = "PROT")) %>%
+  arrange(NES) %>%
+  mutate(gs_description = factor(gs_description, levels = unique(gs_description)))
+
+
+ggplot(data = shared_pathway_results_selected,
+       mapping = aes(x = NES, y = gs_description, shape = omic, color = NES)) +
+  geom_vline(xintercept = c(-1, 1), color = "black", linetype = "dashed", linewidth = 0.3) +
+  geom_point(size = 3.6) +
+  facet_grid(rows = vars(gs_subcat), scales = "free_y",
+             space = "free_y", switch = "y") +
+  scale_y_discrete(name = NULL, position = "right") +
+  scale_color_gradientn(colors = c("#ff6eff", "white", "white", "#5555ff"),
+                        values = scales::rescale(c(-2.5, -1, 1, 2.9))) +
+  scale_shape_manual(name = NULL,
+                     values = c("PROT" = 16, "TRNSCRPT" = 17)) +
+  guides(color = guide_colorbar(barwidth = unit(0.6, "in"), barheight = unit(0.07, "in"), 
+                                frame.colour = "black", ticks.colour = "black", order = 1),
+         shape = guide_legend(title = NULL, order = 2, keyheight = unit(7, "pt"),
+                              keywidth = unit(7, "pt"))) +
+  theme_bw(base_size = 10) +
+  theme(axis.text = element_text(color = "black"),
+        axis.title = element_text(color = "black"),
+        axis.ticks.y = element_blank(),
+        axis.ticks.x = element_line(color = "black", linewidth = 0.3),
+        strip.background = element_blank(),
+        strip.text = element_text(size = 6.5, color = "black"),
+        panel.spacing.y = unit(3, "pt"),
+        panel.border = element_rect(fill = NA, color = "black", linewidth = 0.3),
+        panel.grid = element_blank(),
+        panel.grid.major.y = element_line(linewidth = 0.3, color = "grey92"),
+        plot.margin = margin(t = 20, unit = "pt"),
+        legend.position = "top",
+        legend.direction = "horizontal",
+        legend.box = "horizontal") +
+  labs(title = "Selected pathways that are significant enriched in both -omes",
+       subtitle = "WAT-SC of SED male vs female, transcriptomics and proteomics")
+
+
+ggsave(here("plots", "watsc_rna_protein_pathway_NES_MvF_SED_scatterplot.png"),
+       height = 7, width = 7, dpi = 300, units = "in")
 
 
