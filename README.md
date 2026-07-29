@@ -2,7 +2,7 @@
 
 ## Project Snapshot 
 
-This project adapts and extends the core analytical framework used to identify sex-specific molecular differences in the published MoTrPAC rat endurance-training study of subcutaneous white adipose tissue. Using heart tissue from the same parent study, we apply comparable methods to examine baseline male-versus-female differences and sex-specific responses to endurance exercise training.
+This project adapts and extends the core analytical framework used to identify sex-specific molecular differences in the published MoTrPAC rat endurance-training study of subcutaneous white adipose tissue (Many et al, 2024). Using heart tissue from the same parent study, we apply comparable methods to examine baseline male-versus-female differences and sex-specific responses to endurance exercise training.
 
 The planned workflow includes matched-sample review, differential analysis, and pathway enrichment using heart RNA-sequencing and global proteomics data. Additional analyses, including WGCNA, phenotype correlations, RNA–protein integration, and cardiac-disease pathway mapping, may be completed as time and data availability permit.
 
@@ -38,22 +38,59 @@ Secondary Research Question:
 
 ## Set Up
 
+### Background Review
 
-## Raw Data Files and Data Dictionaries
+- Read the published paper and relevant supplementary methods. https://doi.org/10.1038/s42255-023-00959-9
+- Review the original published GitHub repositories, R package vignettes, and analysis scripts.
 
-- **Phenotypic data file:** `motrpac_pass1b-06_pheno_viallabel_data_merged_v4.0.txt`  
-  **Description:** This file contains the full set of phenotypic variables collected across study animals and biospecimens. Variables include information related to animal testing, study registration, calculated measures, and specimen processing, as defined in the accompanying data dictionary. The documentation first highlights the key variables needed for basic analyses and then provides additional detail.    
+### Software and Repository Setup
+
+- Record the required versions of R and major R packages.
+- Clone or download the required repositories.
+- Install the required R packages.
+
+### Data Preparation
+
+- Download the required MoTrPAC phenotype, transcriptomics, and proteomics files. Download the required MoTrPAC phenotype, transcriptomics, and proteomics files. See the raw_files folder and the file descriptions below for the specific inputs used in this project.
+- Confirm filenames, formats, and expected folder locations.
+- Review the phenotype data dictionary and sample identifiers.
+- Match samples across transcriptomic and proteomic datasets.
+- Confirm that the input files are normalized and ready for analysis.
+  
+
+### Raw Data Files and Data Dictionaries
+
+- **Phenotypic data file:** `motrpac_pass1b-06_pheno_viallabel_data_merged_v4.0.txt`<br>
+  **Description:** This file contains the full set of phenotypic variables collected across study animals and biospecimens. Variables include information related to animal testing, study registration, calculated measures, and specimen processing, as defined in the accompanying data dictionary. The documentation first highlights the key variables needed for basic analyses and then provides additional detail.     
   **Documentation:** [MoTrPAC Phenotype Technical Guide](https://motrpac-data.org/technical-guides/phenotype)
 
- - **Phenotypic data dictionary:** 'motrpac_pass1b-06_pheno_dictionary_merged_v4.0.txt'
-  **Description:** This data dictionary defines the fields included in the phenotypic data tables, along with their scope and allowable values. It is intended to make the phenotypic data easier to interpret and use in analysis.  
+- **Phenotypic data dictionary:** `motrpac_pass1b-06_pheno_dictionary_merged_v4.0.txt`<br>
+  **Description:** This data dictionary defines the fields included in the phenotypic data tables, along with their scope and allowable values. It is intended to make the phenotypic data easier to interpret and use in analysis.   
 **Documentation:** [MoTrPAC Phenotype Technical Guide](https://motrpac-data.org/technical-guides/phenotype)
 
-- **Processed transcriptomic data file:** 'motrpac_pass1b-06_t58-heart_transcript-rna-seq_normalized-log-cpm.txt'
+- **Processed transcriptomic data file:** `motrpac_pass1b-06_t58-heart_transcript-rna-seq_normalized-log-cpm.txt`<br>
   **Description:** This file contains normalized RNA-sequencing measurements from rat heart tissue in the MoTrPAC PASS1B-06 endurance-training study. Gene expression is reported as log-transformed counts per million, which accounts for differences in sequencing depth across samples and reduces the influence of very large count values. The table provides sample-level gene-expression data that can be used to compare expression patterns across training groups, time points, and sexes.
 
-- **Analysis output:** 'pass1b-06_t58-heart_transcript-rna-seq_training-dea-fdr_20211008.txt'
-  **Description:** This file contains statistical results from a time-wise differential gene expression analysis of RNA-sequencing data generated from rat heart tissue in the MoTrPAC PASS1B-06 endurance-training study. 
+- **Analysis output:** `pass1b-06_t58-heart_transcript-rna-seq_training-dea-fdr_20211008.txt`<br>
+  **Description:** This file contains statistical results from a time-wise differential gene expression analysis of RNA-sequencing data generated from rat heart tissue in the MoTrPAC PASS1B-06 endurance-training study.
+
+### Processed Data Files
+-  **Proteomics pathway-enrichment output:** `heart_prot_fgsea.csv`<br>
+   **Description:** This file contains FGSEA pathway-enrichment results from the heart proteomics analysis, including enrichment scores, adjusted significance values, and leading proteins for each pathway.
+
+-  **Proteomics differential-abundance results:** `heart_proteomics_da.csv`<br>
+   **Description:** This file contains differential-abundance results from the heart proteomics analysis.
+
+-  **Transcriptomics differential-expression results:** `heart_transcriptomics_da.csv`<br>
+   **Description:** This file contains differential gene-expression results from the heart transcriptomics analysis.
+
+-  **Transcriptomics differential-expression results:** `liver_transcriptomics_da.csv`<br>
+   **Description:** his file contains differential gene-expression results from the liver transcriptomics analysis.
+
+-  **Transcriptomics differential-expression results:** `liver_transcriptomics_da.csv`<br>
+   **Description:** This file contains differential gene-expression results from the white adapose tissue transcriptomics analysis and was generated by reproducing the code and analytical workflow used in the published study.
+
+  
 
 ### Future Research Questions 
 
