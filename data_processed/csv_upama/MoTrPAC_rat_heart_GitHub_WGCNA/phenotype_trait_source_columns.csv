@@ -1,0 +1,5 @@
+trait,PHENO_column
+vo2max_change,calculated.variables.vo2_max_change
+pct_body_fat_change,calculated.variables.pct_body_fat_change
+pct_body_lean_change,calculated.variables.pct_body_lean_change
+terminal_body_weight,terminal.weight.bw

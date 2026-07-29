@@ -1,0 +1,20 @@
+item,value
+Heart RNA-seq samples,50
+Normalized heart transcript features available,14445
+Heart transcript features supplied,5000
+Feature selection before WGCNA,"Top 5,000 features by across-sample variance; project-specific computational adaptation"
+Network-construction implementation,"Official MoTrPAC run_WGCNA source, unchanged after variance prefilter"
+Power candidates,1:20
+Scale-free R2 threshold,0.90
+Adjacency type,signed
+Correlation,bicor; pairwise.complete.obs
+TOM type,unsigned
+Dynamic-tree cut height,0.99
+Deep split,2
+Minimum cluster size,30
+Module merge cut height,0.15
+Module prefix,T
+Detected modules excluding grey,11
+Official source SHA-256,045fec5124e8e547492fd46fded3bab17fb02a163098759bfd8e00d0bb0100a5
+WGCNA package version,1.74
+Data package version,2.0.0

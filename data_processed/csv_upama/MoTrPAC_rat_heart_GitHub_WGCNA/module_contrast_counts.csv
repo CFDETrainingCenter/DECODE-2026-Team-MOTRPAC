@@ -1,0 +1,14 @@
+contrast_group,contrast,tested_modules,significant_modules,positive_modules,negative_modules,minimum_global_FDR
+MvF_SED,M_SED - F_SED,11,2,1,1,3.2777882337291934e-8
+MvF_exercise_response,(M_1W - M_SED) - (F_1W - F_SED),11,0,0,0,0.7818468243434074
+MvF_exercise_response,(M_2W - M_SED) - (F_2W - F_SED),11,0,0,0,0.7818468243434074
+MvF_exercise_response,(M_4W - M_SED) - (F_4W - F_SED),11,0,0,0,0.7818468243434074
+MvF_exercise_response,(M_8W - M_SED) - (F_8W - F_SED),11,0,0,0,0.7818468243434074
+trained_vs_SED,F_1W - F_SED,11,0,0,0,0.23454511883453252
+trained_vs_SED,F_2W - F_SED,11,0,0,0,0.6025343383301507
+trained_vs_SED,F_4W - F_SED,11,0,0,0,0.23454511883453252
+trained_vs_SED,F_8W - F_SED,11,0,0,0,0.27840287898057026
+trained_vs_SED,M_1W - M_SED,11,0,0,0,0.6025343383301507
+trained_vs_SED,M_2W - M_SED,11,0,0,0,0.44180886364515637
+trained_vs_SED,M_4W - M_SED,11,0,0,0,0.6025343383301507
+trained_vs_SED,M_8W - M_SED,11,0,0,0,0.5388724484210989

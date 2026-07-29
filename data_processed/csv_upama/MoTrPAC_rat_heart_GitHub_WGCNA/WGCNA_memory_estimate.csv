@@ -1,0 +1,6 @@
+metric,value
+Normalized features before variance selection,14445
+Features supplied to official run_WGCNA,5000
+Samples supplied to official run_WGCNA,50
+Approximate size of one dense feature-by-feature matrix (GiB),0.19
+Official outliers removed,0
