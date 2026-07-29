@@ -25,10 +25,10 @@ Secondary Research Question:
 
 ### Objectives
 
-- Reproduce the baseline male-versus-female analytical workflow reported for subcutaneous white adipose tissue.**
-- Apply the same workflow to matched heart RNA-sequencing and global proteomics data.**
-- Identify baseline sex differences in cardiac gene expression, protein abundance, and pathway enrichment.**
-- Characterize within-sex molecular responses across the endurance-training time course.**
+- Reproduce the baseline male-versus-female analytical workflow reported for subcutaneous white adipose tissue.
+- Apply the same workflow to matched heart RNA-sequencing and global proteomics data.
+- Identify baseline sex differences in cardiac gene expression, protein abundance, and pathway enrichment.
+- Characterize within-sex molecular responses across the endurance-training time course.
 
 ## Raw Data Files and Data Dictionaries
 
