@@ -4,6 +4,8 @@
 # plolty files
 /plots/*plotly_files/
 
+# Rplot.pdf
+/Rplots.pdf
 
 # R objects
 .Rproj.user

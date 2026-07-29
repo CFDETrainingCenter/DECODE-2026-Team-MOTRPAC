@@ -32,7 +32,7 @@ feature_to_gene <- FEATURE_TO_GENE
 glimpse(rna_meta)
 
 # so.... we'll pull heart data similarly
-heart_rna_raw <- TRNSCRPT_HEART_RAW_COUNTS
+# heart_rna_raw <- TRNSCRPT_HEART_RAW_COUNTS
 
 
 
@@ -65,7 +65,7 @@ p_data <- pheno %>%
   mutate(exp_group = factor(exp_group, levels = unique(exp_group))) %>%
   # add four RNA quality measures
   inner_join(
-    select(TRNSCRPT_META, viallabel, rin = RIN, pct_globin, pct_umi_dup, median_5_3_bias),
+    select(rna_meta, viallabel, rin = RIN, pct_globin, pct_umi_dup, median_5_3_bias),
     by = "viallabel"
   ) %>%
   as.data.frame()
