@@ -209,7 +209,7 @@ Team members contributed to different components of this project. Individual nam
 
 * **Upama Roy Chowdbury**: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
 * **Ebuka Ezeika**: presentation template development.
-* **Xiuqi "Jade" Li**: transcriptomics analysis pipeline, visualization (volcanoe plots and scatterplot showing cross-omic comparsion).
+* **Xiuqi "Jade" Li**: transcriptomics analysis pipeline, visualization (volcanoe plots and scatterplot showing cross-omic comparsion), Quarto document generation.
 * **Sarah Myer**, MPH, Data Steward, RENCI (smyer@renci.org): documentation and writing support; team facilitator.
 * **Viveka Patil**: article and methodology review, proteomics analysis pipeline, and dashboard development. (https://www.linkedin.com/in/viveka-patil-934b3123b/)
 
