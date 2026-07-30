@@ -59,13 +59,13 @@ Use WGCNA, module–trait analysis, hub-gene identification, and Gene Ontology e
 
 | Workflow                              | Purpose                                      | Status    |
 | ------------------------------------- | -------------------------------------------- | --------- |
-| Pathway reference construction        | Recreate the GO data                         | Complete  |
-| WAT-SC workflow reproduction          | Reproduce the published Many et al. analysis | Complete  |
-| Heart baseline sex-difference analysis | Compare sedentary males and females         | Complete  |
-| Heart exercise-training response      | Compare response across training time course | To verify |
-| Heart WGCNA             | Identify co-expression modules and phenotype relationships | Complete  |
-| Cardiac-disease pathways mapping       | Relate results to cardiac disease biology   | To verify |
-| Dashboard                             | Present results interactively                | In progress |
+| Pathway reference construction        | Recreate the GO data                         | Completed |
+| WAT-SC workflow reproduction          | Reproduce the published Many et al. analysis | Completed |
+| Heart baseline sex-difference analysis | Compare sedentary males and females         | Completed |
+| Heart exercise-training response      | Compare response across training time course | Completed |
+| Heart WGCNA             | Identify co-expression modules and phenotype relationships | Completed |
+| Cardiac-disease pathways mapping       | Relate results to cardiac disease biology   | Completed |
+| Dashboard                             | Present results interactively                | Completed |
 
 <br>
 
@@ -128,20 +128,25 @@ The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomic
 
 ### 3. Heart WGCNA Analysis
 
-The WGCNA analysis begins with processed heart transcriptomics data and associated phenotype information. The data are reviewed to confirm sample matching, group sizes, feature annotations, and potential outliers.
+This workflow adapts the WAT-SC analytical framework to heart transcriptomics and proteomics data across six sequential steps: 
 
-To reduce computational complexity and focus the network analysis on genes showing meaningful variation across samples, the 5,000 most variable transcriptomic features were selected. These features were used to construct a weighted gene co-expression network, which grouped genes with similar expression patterns into modules.
+1. Data audit and PCA
+2. Differential expression 
+3. Pathway enrichment (FGSEA) 
+4. Weighted gene co-expression network analysis (WGCNA) 
+5. WGCNA module functional enrichment (ORA)
+6. Global protein differential analysis
 
-For each module, a module eigengene was calculated to summarize the overall expression pattern of the genes assigned to that module. Module eigengenes were then evaluated in relation to sex, training status, training duration, and other available phenotype traits. Significant module–trait relationships were identified, and highly connected hub genes were selected to represent each module.
-
-Gene Ontology over-representation analysis was then performed using the genes assigned to each module. This final step identified enriched biological processes and supported interpretation of the molecular functions represented by the heart co-expression modules. 
+**More detailed description** for each of this steps are included in `outputs_notebooks/MoTrPAC-heart-transcriptomics-and-proteomics.md`
 
 **Implementation and outputs**
 
 - input data: heart RNA-seq and phenotype data pulled from `MotrpacRatTraining6moData`
-- processed and output files: [`code/`](Python_files_Upama/), in the Python_files_Upama folder. This folder contains both R and Python scripts.
+- script: [`code/Python_files_Upama`](code/Python_files_Upama/). This folder contains both R and Python scripts.
 - figures: grouped in folders starting with `MoTrPAC_rat_heart*` in [`plots/`](plots/)
 - drive link: https://drive.google.com/drive/folders/17yrQChPWkv6SgnYBCuWPmEEZtFaZSgLT?usp=drive_link
+
+
 
 
 ### 4. Dashboard
@@ -222,10 +227,10 @@ Team members contributed to different components of this project. Individual nam
 
 
 ## Generative AI Disclosure
--  Mermaid.ai was used to create the pipeline graphic in the README documentation.
--  AI-assisted tools were used to convert Python to R.
--  AI-assisted tools were used to help write the .html code for the dashboard.
--  AI-assisted tools were used to edit and cross-check the README documentation, improve readability and accessibility, and help verify connections between technical steps.
+- Mermaid.ai was used to create the pipeline graphic in the README documentation.
+- ChatGPT/Codex (GPT 5.6 Sol Light) was used to interogate GitHub repositories for `MotrpacRatTraining6moWATData` and `MotrpacRatTraining6moWAT`, compile Quarto documents based on the .R analysis script (see the .qmd files for more details), troubleshoot code, and convert Python to R.
+- Claude was used to help write the .html code for the dashboard.
+- ChatGPT 5.4 was used to edit and cross-check the README documentation, improve readability and accessibility, and help verify connections between technical steps.
 
 <br>
 
