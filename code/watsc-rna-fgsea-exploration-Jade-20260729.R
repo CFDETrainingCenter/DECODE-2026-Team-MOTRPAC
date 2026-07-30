@@ -30,8 +30,8 @@ dim(watsc_rna_da)             # 16404    10
 
 
 ## msigdb pathways 
-load(here("data_msigdb", "msigdb_pathways.rda"))
-msigdb_pathways_selected
+msigdb_pathways <- readRDS(here("data_msigdb", "msigdb_pathways.rds"))
+msigdb_pathways
 
 
 
@@ -117,7 +117,7 @@ watsc_rna_genes_tested <- watsc_rna_da_entrez_id %>%
 min_pathway_coverage <- 0.85
 min_pathway_size_after_filtering <- 15L
 
-tissue_filtered_go_pathways <- msigdb_pathways_selected %>%
+tissue_filtered_go_pathways <- msigdb_pathways %>%
   mutate(entrez_gene = map(entrez_gene, ~ intersect(as.character(.x), watsc_rna_genes_tested)),
          pathway_size_after_tissue_filtering = lengths(entrez_gene),
          fraction_of_original_pathway_retained = pathway_size_after_tissue_filtering / set_size) %>%
@@ -189,6 +189,9 @@ fgsea_results <- annotated_fgsea_results %>%
 saveRDS(fgsea_results,
         file = here("data_processed", "watsc_transcriptomics_fgsea.rds"))
 
+write_csv(fgsea_results,
+          file = here("data_processed", "watsc_transcriptomics_fgsea.csv"))
+
 
 # Sanity check -----
 fgsea_results %>%
@@ -200,4 +203,7 @@ fgsea_results %>%
 ## since the proteomics dataset decided what was graphed in Fig 2c, 
 ## we should probably combine the datasets before graphing
 
+
+# Clear environment ----
+rm(list = ls())
 
