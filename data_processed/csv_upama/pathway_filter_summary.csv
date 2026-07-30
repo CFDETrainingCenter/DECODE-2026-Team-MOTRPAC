@@ -1,0 +1,4 @@
+gs_subcat,Step3_approved_pathways,pathways_with_at_least_15_WGCNA_genes,pathways_removed_for_small_WGCNA_overlap
+GO:BP,1786,610,1176
+GO:CC,248,77,171
+GO:MF,349,87,262

@@ -1,0 +1,21 @@
+item,value
+Analysis,WGCNA module over-representation analysis
+Tissue,Rat heart
+WGCNA input,/content/drive/MyDrive/MoTrPAC_2day_hackathon/results/04_rat_heart_GitHub_WGCNA_top5000/official_WGCNA_modules.csv
+WGCNA feature-selection adaptation,"Top 5,000 across-sample-variable transcripts from Step 4"
+Number of non-grey modules,11
+Mapped WGCNA features,4491
+Unique Entrez genes in WGCNA universe,4459
+Pathway source,Step 3 MSigDB v7.5.1 filtered GO pathways
+GO collections,"GO:BP, GO:CC, GO:MF"
+Original Step 3 pathway-size range,15–300 genes
+Step 3 transcriptome pathway-retention threshold,At least 85% of original pathway retained in Step 3
+"Top-5,000 WGCNA pathway adaptation",No second 85% filter; intersect with mapped WGCNA universe
+Minimum post-intersection pathway size,15 genes
+ORA function,Official MoTrPAC fora2()
+P-value method,Scaled P value
+Global adjustment,TRUE across modules within GO subcategory
+Significance threshold,Scaled P < 0.05
+ORA directionality,Non-directional
+Official fora2 source SHA-256,682c1bac9eb4e20265151adce1c132a5d6fef78366f77c0c4331cb7fa15c94bd
+fgsea version,1.38.0
