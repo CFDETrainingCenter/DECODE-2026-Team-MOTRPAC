@@ -1,0 +1,14 @@
+contrast_group,contrast,ranked_entrez_genes,plain_language,positive_logFC_means
+trained_vs_SED,F_1W - F_SED,13603,Female heart: 1 week versus sedentary,Higher expression after 1 week in females
+trained_vs_SED,F_2W - F_SED,13603,Female heart: 2 weeks versus sedentary,Higher expression after 2 weeks in females
+trained_vs_SED,F_4W - F_SED,13603,Female heart: 4 weeks versus sedentary,Higher expression after 4 weeks in females
+trained_vs_SED,F_8W - F_SED,13603,Female heart: 8 weeks versus sedentary,Higher expression after 8 weeks in females
+trained_vs_SED,M_1W - M_SED,13603,Male heart: 1 week versus sedentary,Higher expression after 1 week in males
+trained_vs_SED,M_2W - M_SED,13603,Male heart: 2 weeks versus sedentary,Higher expression after 2 weeks in males
+trained_vs_SED,M_4W - M_SED,13603,Male heart: 4 weeks versus sedentary,Higher expression after 4 weeks in males
+trained_vs_SED,M_8W - M_SED,13603,Male heart: 8 weeks versus sedentary,Higher expression after 8 weeks in males
+MvF_SED,M_SED - F_SED,13603,Sedentary male heart versus sedentary female heart,Higher expression in sedentary males
+MvF_exercise_response,(M_1W - M_SED) - (F_1W - F_SED),13603,Male versus female training response at 1 week,Larger 1-week training response in males
+MvF_exercise_response,(M_2W - M_SED) - (F_2W - F_SED),13603,Male versus female training response at 2 weeks,Larger 2-week training response in males
+MvF_exercise_response,(M_4W - M_SED) - (F_4W - F_SED),13603,Male versus female training response at 4 weeks,Larger 4-week training response in males
+MvF_exercise_response,(M_8W - M_SED) - (F_8W - F_SED),13603,Male versus female training response at 8 weeks,Larger 8-week training response in males

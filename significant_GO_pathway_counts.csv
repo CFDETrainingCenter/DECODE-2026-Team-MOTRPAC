@@ -1,0 +1,40 @@
+contrast_group,contrast,plain_language,gs_subcat,tested_pathways,FDR05_total,FDR05_positive_NES,FDR05_negative_NES,minimum_p_value,minimum_global_FDR
+MvF_SED,M_SED - F_SED,Sedentary male heart versus sedentary female heart,GO:BP,1786,76,43,33,1.5439769623477203e-14,2.7575428547530284e-11
+MvF_SED,M_SED - F_SED,Sedentary male heart versus sedentary female heart,GO:CC,248,36,24,12,6.356027316581728e-29,1.5762947745122685e-26
+MvF_SED,M_SED - F_SED,Sedentary male heart versus sedentary female heart,GO:MF,349,15,8,7,4.1214278221468646e-11,1.4383783099292557e-8
+MvF_exercise_response,(M_1W - M_SED) - (F_1W - F_SED),Male versus female training response at 1 week,GO:BP,1786,9,3,6,2.7247377359398058e-5,0.004634649139417613
+MvF_exercise_response,(M_1W - M_SED) - (F_1W - F_SED),Male versus female training response at 1 week,GO:CC,248,3,2,1,1.255839677904108e-6,8.898521146291966e-5
+MvF_exercise_response,(M_1W - M_SED) - (F_1W - F_SED),Male versus female training response at 1 week,GO:MF,349,0,0,0,0.0027580930327028535,0.1283432624551061
+MvF_exercise_response,(M_2W - M_SED) - (F_2W - F_SED),Male versus female training response at 2 weeks,GO:BP,1786,29,27,2,7.153664496734931e-25,5.110577916467434e-21
+MvF_exercise_response,(M_2W - M_SED) - (F_2W - F_SED),Male versus female training response at 2 weeks,GO:CC,248,28,25,3,9.411962551336316e-29,9.336666850925625e-26
+MvF_exercise_response,(M_2W - M_SED) - (F_2W - F_SED),Male versus female training response at 2 weeks,GO:MF,349,8,8,0,1.6812831075994782e-12,2.3470712182088714e-9
+MvF_exercise_response,(M_4W - M_SED) - (F_4W - F_SED),Male versus female training response at 4 weeks,GO:BP,1786,12,5,7,1.8411868111338966e-6,4.384479526246852e-4
+MvF_exercise_response,(M_4W - M_SED) - (F_4W - F_SED),Male versus female training response at 4 weeks,GO:CC,248,10,3,7,3.565006887430746e-5,0.0017682434161656502
+MvF_exercise_response,(M_4W - M_SED) - (F_4W - F_SED),Male versus female training response at 4 weeks,GO:MF,349,4,0,4,1.3132100504358971e-5,0.0015277010253404268
+MvF_exercise_response,(M_8W - M_SED) - (F_8W - F_SED),Male versus female training response at 8 weeks,GO:BP,1786,37,17,20,2.078760550140848e-17,3.7126663425515545e-14
+MvF_exercise_response,(M_8W - M_SED) - (F_8W - F_SED),Male versus female training response at 8 weeks,GO:CC,248,23,1,22,4.7957883075205855e-20,1.585807333686807e-17
+MvF_exercise_response,(M_8W - M_SED) - (F_8W - F_SED),Male versus female training response at 8 weeks,GO:MF,349,6,0,6,7.97251625998259e-9,2.7824081747339236e-6
+trained_vs_SED,F_1W - F_SED,Female heart: 1 week versus sedentary,GO:BP,1786,13,3,10,5.0952952386236365e-6,0.00119346849785991
+trained_vs_SED,F_1W - F_SED,Female heart: 1 week versus sedentary,GO:CC,248,9,2,7,9.932771931187397e-8,4.58293477011065e-6
+trained_vs_SED,F_1W - F_SED,Female heart: 1 week versus sedentary,GO:MF,349,3,1,2,3.42804471947419e-5,0.0028150296637564527
+trained_vs_SED,F_2W - F_SED,Female heart: 2 weeks versus sedentary,GO:BP,1786,27,10,17,6.564413105203665e-16,1.8758466889429992e-12
+trained_vs_SED,F_2W - F_SED,Female heart: 2 weeks versus sedentary,GO:CC,248,21,5,16,4.333301039645544e-23,4.2986346313283796e-20
+trained_vs_SED,F_2W - F_SED,Female heart: 2 weeks versus sedentary,GO:MF,349,4,2,2,9.594326977949319e-26,2.67873609224345e-22
+trained_vs_SED,F_4W - F_SED,Female heart: 4 weeks versus sedentary,GO:BP,1786,67,29,38,4.5839869457382664e-10,3.638666971150464e-7
+trained_vs_SED,F_4W - F_SED,Female heart: 4 weeks versus sedentary,GO:CC,248,30,20,10,2.0790475667584878e-19,8.24966074489768e-17
+trained_vs_SED,F_4W - F_SED,Female heart: 4 weeks versus sedentary,GO:MF,349,17,12,5,1.3599635072216014e-7,2.7121557944019365e-5
+trained_vs_SED,F_8W - F_SED,Female heart: 8 weeks versus sedentary,GO:BP,1786,43,30,13,1.645627470763915e-13,2.612525033586091e-10
+trained_vs_SED,F_8W - F_SED,Female heart: 8 weeks versus sedentary,GO:CC,248,32,19,13,5.019516966682464e-16,1.244840207737251e-13
+trained_vs_SED,F_8W - F_SED,Female heart: 8 weeks versus sedentary,GO:MF,349,11,9,2,2.7160930710376e-10,9.479164817921224e-8
+trained_vs_SED,M_1W - M_SED,Male heart: 1 week versus sedentary,GO:BP,1786,35,23,12,3.6200190493453814e-8,1.616338505532713e-5
+trained_vs_SED,M_1W - M_SED,Male heart: 1 week versus sedentary,GO:CC,248,19,11,8,8.051122827688119e-14,1.2287252069333252e-11
+trained_vs_SED,M_1W - M_SED,Male heart: 1 week versus sedentary,GO:MF,349,5,4,1,8.424217943614427e-11,3.92006941642858e-8
+trained_vs_SED,M_2W - M_SED,Male heart: 2 weeks versus sedentary,GO:BP,1786,59,39,20,3.198767553162314e-22,3.81261756221328e-18
+trained_vs_SED,M_2W - M_SED,Male heart: 2 weeks versus sedentary,GO:CC,248,32,20,12,3.2395963608663944e-26,6.427359179958927e-23
+trained_vs_SED,M_2W - M_SED,Male heart: 2 weeks versus sedentary,GO:MF,349,14,11,3,1.35207773895912e-11,1.0593482645430565e-8
+trained_vs_SED,M_4W - M_SED,Male heart: 4 weeks versus sedentary,GO:BP,1786,38,28,10,1.6587769078717958e-10,1.4812877787295136e-7
+trained_vs_SED,M_4W - M_SED,Male heart: 4 weeks versus sedentary,GO:CC,248,22,12,10,3.0149569147247843e-15,5.437885926194521e-13
+trained_vs_SED,M_4W - M_SED,Male heart: 4 weeks versus sedentary,GO:MF,349,9,6,3,2.2964744712075076e-11,1.2823513447222722e-8
+trained_vs_SED,M_8W - M_SED,Male heart: 8 weeks versus sedentary,GO:BP,1786,23,14,9,1.497667301097084e-7,6.113905828021468e-5
+trained_vs_SED,M_8W - M_SED,Male heart: 8 weeks versus sedentary,GO:CC,248,19,8,11,3.237333780203507e-11,3.0585096285351233e-9
+trained_vs_SED,M_8W - M_SED,Male heart: 8 weeks versus sedentary,GO:MF,349,3,0,3,1.1482440724176254e-12,1.6029487250950051e-9
