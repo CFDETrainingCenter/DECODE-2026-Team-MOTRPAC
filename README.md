@@ -209,7 +209,7 @@ Have a section on naming convention --- will need to adjust after clean up
 Team members contributed to different components of this project. Individual names may appear in code filenames and output directories to indicate the analysis component each person developed or completed. _Team members listed alphabetically by last name_
 
 * Xiuqi "Jade" Li: transcriptomics analysis pipeline, visualization.
-* Viveka Patil: article and methodology review, proteomics analysis pipeline, and dashboard development.
+* Viveka Patil: article and methodology review, proteomics analysis pipeline, and dashboard development. (https://www.linkedin.com/in/viveka-patil-934b3123b/)
 * Upama: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
 * Sarah Myer, MPH, Data Steward, RENCI (smyer@renci.org): documentation and writing support; team facilitator.
 * Ebuka: [Role to be added.]
