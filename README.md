@@ -38,10 +38,6 @@ Endurance exercise training (ExT) benefits cardiovascular health, but sex-specif
 
 ## Analysis Strategy
 
-<p align="center">
-  <img src="images/Pipeline.svg" alt="DeCoDe Institute MoTrPAC team analysis workflow" width="250">
-</p>
-
 The project is organized into three related workflows:
 
 **1. Reproduce the Many et al. WAT-SC analysis.**
@@ -53,18 +49,23 @@ Adapt the WAT-SC workflow to matched heart transcriptomics and proteomics data t
 **3. Conduct heart-specific exploratory analyses.**
 Use WGCNA, module–trait analysis, hub-gene identification, and Gene Ontology enrichment to characterize cardiac co-expression patterns.
 
+<p align="center">
+  <img src="images/Pipeline.svg" alt="DeCoDe Institute MoTrPAC team analysis workflow" width="250">
+</p>
+
 <br>
+
 
 ## Project Status
 
 | Workflow                              | Purpose                                      | Status    |
 | ------------------------------------- | -------------------------------------------- | --------- |
-| Pathway reference construction        | Recreate the GO data                         | Completed |
-| WAT-SC workflow reproduction          | Reproduce the published Many et al. analysis | Completed |
-| Heart baseline sex-difference analysis | Compare sedentary males and females         | Completed |
-| Heart exercise-training response      | Compare response across training time course | Completed |
-| Heart WGCNA             | Identify co-expression modules and phenotype relationships | Completed |
-| Cardiac-disease pathways mapping       | Relate results to cardiac disease biology   | Completed |
+| Pathway reference construction        | Recreate the GO data                         | Complete |
+| WAT-SC workflow reproduction          | Reproduce the published Many et al. analysis | Complete |
+| Heart baseline sex-difference analysis | Compare sedentary males and females         | Complete |
+| Heart exercise-training response      | Compare response across training time course | Complete |
+| Heart WGCNA and ORA | Identify co-expression modules and assign biological function  | Completed |
+| Cardiac-disease pathways mapping       | Relate results to cardiac disease biology   | Not started |
 | Dashboard                             | Present results interactively                | Completed |
 
 <br>
