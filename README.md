@@ -100,6 +100,7 @@ The published WAT-SC workflow was followed from the original transcriptommics an
 - **stand-alone rendered notebook**: [`output_notebooks/MoTrPAC_watsc-MvsF-SED.html`](output_notebooks/MoTrPAC_watsc-MvsF-SED.html)
 
 
+
 ### 2. Heart baseline sex-difference analysis
 
 The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomics and proteomics datasets for male and female sedentary samples. Separate transcriptomic and proteomic differential analyses identified genes and proteins that differ between males and females. The resulting ranked differential-expression and differential-abundance results were then used as inputs for pathway-enrichment analysis and cross-omic comparison.
@@ -112,6 +113,8 @@ The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomic
 - figures: `heart_*.png` or `heart_*.html` files [`plots/`](plots/)
 - **stand-alone rendered notebook**: [`output_notebooks/MoTrPAC_heart-MvsF-SED.html`](output_notebooks/MoTrPAC_heart-MvsF-SED.html)
 
+
+
 ### 3. Heart WGCNA Analysis
 
 The WGCNA analysis begins with processed heart transcriptomics data and associated phenotype information. The data are reviewed to confirm sample matching, group sizes, feature annotations, and potential outliers.
@@ -122,10 +125,10 @@ For each module, a module eigengene was calculated to summarize the overall expr
 
 Gene Ontology over-representation analysis was then performed using the genes assigned to each module. This final step identified enriched biological processes and supported interpretation of the molecular functions represented by the heart co-expression modules.
 
-
 **Implementation and outputs**
 
 TBA for Heart WGCNA Analysis
+
 
 
 ### 4. Dashboard
