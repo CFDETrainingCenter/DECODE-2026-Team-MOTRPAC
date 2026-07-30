@@ -24,7 +24,7 @@ Endurance exercise training (ExT) benefits cardiovascular health, but sex-specif
 - Do male and female hearts show distinct co-expression modules (WGCNA) linked to phenotypic measures (VO2max, body composition)?
 - Do the sex-specific pathways identified overlap with known cardiac disease pathways (e.g., hypertrophic/dilated cardiomyopathy, mitochondrial dysfunction)?
 
-
+<br>
 
 ## Objectives
 
@@ -34,6 +34,7 @@ Endurance exercise training (ExT) benefits cardiovascular health, but sex-specif
 4. Characterize within-sex molecular responses across the endurance-training time course.
 5. Explore heart co-expression modules, phenotype associations, and hub genes.
 
+<br>
 
 ## Analysis Strategy
 
@@ -71,13 +72,13 @@ Use WGCNA, module–trait analysis, hub-gene identification, and Gene Ontology e
 
 ## Analysis Workflows and Methods
 
-### 0. Pathway reference construction
-To prepare for our reproduction of the WAT-SC analysis, we reconstructed the xxx. This involves xxx.
+### 0. Shared preparation: pathway-reference construction
+To reproduce the pathway-enrichment analysis, we reconstructed the Gene Ontology pathway collection used by the published workflow. The archived December 15, 2021 Gene Ontology structure was processed to create the MSigDB pathway subset used as the reference for FGSEA.
 
 **Implementation and outputs**
 
 * script: `code/msigdb-pathway-exploration-Jade-20260729.R`
-* archived GO data from 2021-12-15: `data_msigdb/msigdb_go_basic_2021-12-15.obo`
+* archived GO structure from 2021-12-15: `data_msigdb/msigdb_go_basic_2021-12-15.obo`
 * subset of msigdb pathways used in our FGSEA: `data_msigdb/msigdb_pathways.rds`
 
 
@@ -92,20 +93,20 @@ The published WAT-SC workflow was followed from the original transcriptommics an
 
 **Implementation and outputs**
 
-- input data: pulled from `MotrpacRatTraining6moWATData`
+- input data: pulled from `MotrpacRatTraining6moData`
 - analysis script: `watsc_*.R` files in [`code/`](code/),
 - stand-alone rendered notebook: [`output_notebooks/MoTrPAC_watsc-MvsF-SED.html`](output_notebooks/MoTrPAC_watsc-MvsF-SED.html)
 - processed results: `watsc_*.csv` or `watsc_*.rds` files in [`data_processed/`](data_processed/), 
 - figures: `watsc_*.png` or `watsc_*.html` files [`plots/`](plots/)
 
 
-### 2. Heart baseline sex-different analysis
+### 2. Heart baseline sex-difference analysis
 
-The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomics and proteomics datasets for male and female sedentary samples. Separate transcriptomic and proteomic differential analyses identified genes and proteins that differ between males and females. The resulting ranked differential-expression and differential-abundance results are then used as inputs for pathway-enrichment analysis and cross-omic comparison.
+The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomics and proteomics datasets for male and female sedentary samples. Separate transcriptomic and proteomic differential analyses identified genes and proteins that differ between males and females. The resulting ranked differential-expression and differential-abundance results were then used as inputs for pathway-enrichment analysis and cross-omic comparison.
 
 **Implementation and outputs**
 
-- input data: pulled from `MotrpacRatTraining6moWATData`
+- input data: pulled from `MotrpacRatTraining6moData`
 - analysis script: `heart_*.R` files in [`code/`](code/),
 - stand-alone rendered notebook: [`output_notebooks/MoTrPAC_heart-MvsF-SED.html`](output_notebooks/MoTrPAC_heart-MvsF-SED.html)
 - processed results: `heart_*.csv` or `heart_*.rds` files in [`data_processed/`](data_processed/), 
@@ -130,7 +131,11 @@ TBA for Heart WGCNA Analysis
 
 ### 4. Dashboard
 
-TBA for Dashboard
+An interactive dashboard is in development to support exploration of differential-analysis, pathway-enrichment, and cross-omic results. 
+
+**Implementation and outputs**
+
+- dashboard source files are available in `output_dashboard/`
 
 
 <br>
@@ -146,6 +151,7 @@ TBA for Dashboard
 ├── data_processed               # df containing generated result 
 ├── output_dashboard             # interactive dashboard files
 ├── output_notebooks             # rendered standalone Quarto reports
+├── plots                        # static and interactive figures organized by workflow
 └── images                       # README and project documentation images
 ```
 
