@@ -72,6 +72,17 @@ Use WGCNA, module–trait analysis, hub-gene identification, and Gene Ontology e
 
 ## Analysis Workflows and Methods
 
+> [!NOTE]
+> **Why this repository includes both R scripts and Quarto documents**
+>
+> We approached the reproduction of the published WAT-SC analysis as both a research and learning exercise. During workflow development, we used standalone R scripts to run code interactively, inspect intermediate objects, troubleshoot individual steps, and compare our results with the published analysis.
+>
+> After establishing and validating the workflow, we organized the analysis into Quarto documents for reproducible execution, documentation, and long-term sharing and archiving. The R scripts thus preserve the exploratory development process, while the Quarto documents provide consolidated records of the workflows and results at the current stage of the project.
+>
+> Each Quarto document includes the output of `sessionInfo()` at the end of the report. This records the R version, operating platform, and attached package versions used to render the analysis, supporting transparency and future reproducibility.
+
+
+
 ### 0. Shared preparation: pathway-reference construction
 To reproduce the pathway-enrichment analysis, we reconstructed the Gene Ontology pathway collection used by the published workflow. The archived December 15, 2021 Gene Ontology structure was processed to create the MSigDB pathway subset used as the reference for FGSEA.
 
@@ -93,7 +104,7 @@ The published WAT-SC workflow was followed from the original transcriptommics an
 
 **Implementation and outputs**
 
-- input data: pulled from `MotrpacRatTraining6moData`
+- input data: pulled from [`MotrpacRatTraining6moData` ver 2.0.0](https://doi.org/10.5281/zenodo.16851449)`MotrpacRatTraining6moData`
 - analysis script: `watsc_*.R` files in [`code/`](code/),
 - processed results: `watsc_*.csv` or `watsc_*.rds` files in [`data_processed/`](data_processed/), 
 - figures: `watsc_*.png` or `watsc_*.html` files [`plots/`](plots/)
@@ -107,7 +118,7 @@ The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomic
 
 **Implementation and outputs**
 
-- input data: pulled from `MotrpacRatTraining6moData`
+- input data: pulled from [`MotrpacRatTraining6moData` ver 2.0.0](https://doi.org/10.5281/zenodo.16851449)
 - analysis script: `heart_*.R` files in [`code/`](code/),
 - processed results: `heart_*.csv` or `heart_*.rds` files in [`data_processed/`](data_processed/), 
 - figures: `heart_*.png` or `heart_*.html` files [`plots/`](plots/)
@@ -170,11 +181,13 @@ An interactive dashboard is in development to support exploration of differentia
 ```
 
 
-Have a section on naming convention --- will need to adjust after clean up
+Have a section on naming conventions?? --- will need to adjust after clean up
 -  WATSC: Replication of the published subcutaneous white adipose tissue analysis.
 -  Liver: Tissue-adapted analysis using the same methods applied to liver data.
 -  Heart: Tissue-adapted analysis using the same methods applied to heart data.
 
+
+<br>
 
 
 ## Reproducing this Analysis
@@ -208,10 +221,10 @@ Have a section on naming convention --- will need to adjust after clean up
 
 Team members contributed to different components of this project. Individual names may appear in code filenames and output directories to indicate the analysis component each person developed or completed. _Team members listed alphabetically by last name_
 
-* Xiuqi "Jade" Li: transcriptomics analysis pipeline, visualization.
-* Viveka Patil: article and methodology review, proteomics analysis pipeline, and dashboard development. (https://www.linkedin.com/in/viveka-patil-934b3123b/)
-* Upama: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
-* Sarah Myer, MPH, Data Steward, RENCI (smyer@renci.org): documentation and writing support; team facilitator.
+* **Xiuqi "Jade" Li**: transcriptomics analysis pipeline, visualization (volcanoe plots and scatterplot showing cross-omic comparsion).
+* **Sarah Myer**, MPH, Data Steward, RENCI (smyer@renci.org): documentation and writing support; team facilitator.
+* **Viveka Patil**: article and methodology review, proteomics analysis pipeline, and dashboard development. (https://www.linkedin.com/in/viveka-patil-934b3123b/)
+* **Upama**: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
 * Ebuka: [Role to be added.]
 
 <br>
