@@ -151,11 +151,11 @@ This workflow adapts the WAT-SC analytical framework to heart transcriptomics an
 
 ### 4. Dashboard
 
-An interactive dashboard is in development to support exploration of differential-analysis, pathway-enrichment, and cross-omic results. [Add brief instructions on how to use the dashboard? e.g., download HTML localy, upload csv file from within `data_processed`]
+An interactive dashboard was developed to support interative exploration of differential-analysis, pathway-enrichment, cross-omic results, and more. To use the interactive dashboard, download  `output_dashboard/MOTRPAC_dashboard.html` open in your browser. Upload relevant csv files from `data_processed` following the instructions.
 
 **Implementation and outputs**
 
-- dashboard source files are available in `output_dashboard/`
+- stand-alone html file is available in `output_dashboard/`
 
 
 <br>
@@ -166,7 +166,6 @@ An interactive dashboard is in development to support exploration of differentia
 ```text
 .
 ├── code                         # R and Python analysis scripts
-├── data_raw                     # source molecular and phenotype data --- did we use this?
 ├── data_msigdb                  # archived GO and MSigDB pathway reference
 ├── data_processed               # df containing generated result 
 ├── output_dashboard             # interactive dashboard files
@@ -174,13 +173,6 @@ An interactive dashboard is in development to support exploration of differentia
 ├── plots                        # static and interactive figures organized by workflow
 └── images                       # README and project documentation images
 ```
-
-
-Have a section on naming conventions?? --- will need to adjust after clean up
--  WATSC: Replication of the published subcutaneous white adipose tissue analysis.
--  Liver: Tissue-adapted analysis using the same methods applied to liver data.
--  Heart: Tissue-adapted analysis using the same methods applied to heart data.
-
 
 <br>
 
