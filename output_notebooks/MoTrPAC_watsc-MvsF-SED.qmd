@@ -1,0 +1,1573 @@
+---
+title: "Sexual dimorphism in sedentary rat subcutaneous white adipose tissue"
+subtitle: "Replication of Many et al. (2024), Figure 2a–c"
+author: "DECODE 2026 Team MoTrPAC"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-summary: "Show code"
+    code-tools: true
+    embed-resources: true
+    fig-responsive: true
+    theme: cosmo
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: false
+knitr:
+  opts_chunk:
+    root.dir: ..
+    fig.path: figure/
+---
+
+## Study objective
+
+This notebook reproduces the transcriptomic and proteomic portions of Figure 2a–c from [Many et al., *Nature Metabolism* (2024)](https://www.nature.com/articles/s42255-023-00959-9).
+
+The comparison we focus on in this analysis is the subcutaneous white adipose tissue (WAT-SC) from sedentary male versus sedentary female rat.
+
+The complete pipeline is run in this document, starting from the data objects in `MotrpacRatTraining6moData`. The notebook also does export data files or visualizations. Plots are generated in memory and displayed directly in the rendered document.
+
+Analysis in this document is based on five scripts:
+
+1.  `code/watsc-rna-da-exploration-Jade-20260728.R`
+2.  `code/watsc-protein-da-Jade-20260729.R`
+3.  `code/watsc-rna-fgsea-exploration-Jade-20260729.R`
+4.  `code/watsc-protein-fgsea-Jade-20260729.R`
+5.  `code/watsc-fgsea-graph-Jade-20260729.R`
+
+Codex (GPT 5.6 Sol Light) was used to compile of this Quarto document, see section on Gen AI usage for specific prompts used.
+
+The contrast is defined throughout as
+
+$$
+\mathrm{M\_SED}-\mathrm{F\_SED}.
+$$
+
+Thus, a positive log-fold change or normalized enrichment score (NES) indicates higher abundance or enrichment in sedentary males; a negative value indicates higher abundance or enrichment in sedentary females.
+
+Significance is defined as a Benjamini–Hochberg (BH) adjusted $P$ value below 0.05.
+
+## Setup
+
+### Load libraries
+
+```{r}
+#| label: load-libraries
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(here)
+library(knitr)
+library(edgeR)
+library(limma)
+library(ggrepel)
+library(fgsea)
+library(BiocParallel)
+library(data.table)
+library(grid)
+library(MotrpacRatTraining6moData)
+```
+
+### Set cutoff and functions
+
+```{r}
+#| label: set-cutoff-functions
+fdr_cutoff <- 0.05
+
+direction_summary <- function(x) {
+  tibble(
+    Tested = nrow(x),
+    `Higher in male` = sum(
+      x$adj.P.Val < fdr_cutoff & x$logFC > 0,
+      na.rm = TRUE
+    ),
+    `Higher in female` = sum(
+      x$adj.P.Val < fdr_cutoff & x$logFC < 0,
+      na.rm = TRUE
+    ),
+    `Not significant` = sum(
+      x$adj.P.Val >= fdr_cutoff,
+      na.rm = TRUE
+    )
+  )
+}
+```
+
+## Input data
+
+The transcriptomic analysis begins with raw RNA-seq counts. The proteomic analysis begins with the normalized protein-abundance matrix supplied by the `MotrpacRatTraining6moData` package. Both analyses use the shared phenotype and feature-annotation objects.
+
+```{r}
+#| label: load-input-data
+
+pheno <- PHENO
+
+rna_meta <- TRNSCRPT_META
+watsc_rna_raw <- TRNSCRPT_WATSC_RAW_COUNTS
+prot_norm <- PROT_WATSC_NORM_DATA
+
+feature_to_gene <- FEATURE_TO_GENE
+outliers <- OUTLIERS
+
+input_summary <- tibble(
+  Object = c(
+    "WAT-SC RNA raw-count matrix",
+    "WAT-SC normalized protein matrix"
+  ),
+  Features = c(
+    nrow(watsc_rna_raw),
+    nrow(prot_norm)
+  ),
+  `Numeric sample columns` = c(
+    sum(vapply(watsc_rna_raw, is.numeric, logical(1))),
+    sum(vapply(prot_norm, is.numeric, logical(1)))
+  )
+)
+
+kable(
+  input_summary,
+  caption = "Dimensions of the two primary molecular input objects.",
+  format.args = list(big.mark = ",")
+)
+```
+
+## Sample metadata
+
+Experimental groups combine sex and training time. Sedentary controls are encoded as `F_SED` and `M_SED`; the remaining groups are retained in the design so that the two sedentary groups are estimated within the full dataset.
+
+```{r}
+#| label: construct-sample-metadata
+
+p_data <- pheno %>%
+  filter(tissue == "WAT-SC") %>%
+  select(pid:viallabel, sex, timepoint = group) %>%
+  mutate(
+    sex = factor(str_to_title(sex), levels = c("Female", "Male")),
+    timepoint = ifelse(timepoint == "control", "SED", toupper(timepoint)),
+    timepoint = factor(
+      timepoint,
+      levels = c("SED", paste0(2^(0:3), "W"))
+    ),
+    exp_group = interaction(
+      substr(sex, 1, 1),
+      timepoint,
+      sep = "_"
+    )
+  ) %>%
+  arrange(sex, timepoint) %>%
+  mutate(
+    exp_group = factor(exp_group, levels = unique(exp_group))
+  ) %>%
+  as.data.frame()
+
+rownames(p_data) <- p_data$viallabel
+
+p_data %>%
+  count(sex, timepoint, exp_group, name = "Samples") %>%
+  kable(
+    caption = "WAT-SC samples by sex and training group."
+  )
+```
+
+## Transcriptomic differential analysis
+
+### Align counts, metadata, and feature annotations
+
+Four RNA quality measurements are added to the phenotype data: RNA integrity number (RIN), percentage of reads assigned to globin, percentage of duplicated unique molecular identifiers, and median 5′–3′ coverage bias.
+
+```{r}
+#| label: rna-align-data
+
+p_data_rna <- p_data %>%
+  inner_join(
+    select(
+      rna_meta,
+      viallabel,
+      rin = RIN,
+      pct_globin,
+      pct_umi_dup,
+      median_5_3_bias
+    ),
+    by = "viallabel"
+  ) %>%
+  as.data.frame()
+
+rownames(p_data_rna) <- p_data_rna$viallabel
+
+count_mat <- watsc_rna_raw %>%
+  select(feature_ID, where(is.numeric)) %>%
+  column_to_rownames("feature_ID") %>%
+  as.matrix()
+
+count_mat <- count_mat[, rownames(p_data_rna)]
+
+stopifnot(identical(rownames(p_data_rna), colnames(count_mat)))
+
+rna_f_data <- feature_to_gene %>%
+  filter(feature_ID %in% rownames(count_mat)) %>%
+  select(feature_ID, gene_symbol, entrez_gene) %>%
+  distinct() %>%
+  group_by(feature_ID) %>%
+  filter(
+    !(
+      grepl("^LOC|^NEWGENE", gene_symbol) &
+        !all(grepl("^LOC|^NEWGENE", gene_symbol))
+    )
+  ) %>%
+  filter(
+    !(
+      all(grepl("^LOC|^NEWGENE", gene_symbol)) &
+        is.na(entrez_gene) &
+        !all(is.na(entrez_gene))
+    )
+  ) %>%
+  summarise(
+    across(
+      c(gene_symbol, entrez_gene),
+      ~ ifelse(
+        all(is.na(.x)),
+        NA_character_,
+        paste(.x, collapse = ";")
+      )
+    ),
+    .groups = "drop"
+  ) %>%
+  as.data.frame()
+
+rownames(rna_f_data) <- rna_f_data$feature_ID
+rna_f_data <- rna_f_data[rownames(count_mat), ]
+
+stopifnot(identical(rownames(rna_f_data), rownames(count_mat)))
+
+tibble(
+  `RNA samples` = ncol(count_mat),
+  `RNA features before expression filtering` = nrow(count_mat)
+) %>%
+  kable(
+    caption = "Aligned RNA-seq data before expression filtering.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+### Filter low-expression features and remove outliers
+
+Features with zero counts everywhere are removed by `DGEList()`. `filterByExpr()` then retains features with sufficient expression under the full sex-by-timepoint grouping. Published transcriptomic outliers are removed after expression filtering.
+
+```{r}
+#| label: rna-filter-and-outliers
+
+dge_raw <- DGEList(
+  counts = count_mat,
+  samples = p_data_rna,
+  genes = rna_f_data,
+  group = p_data_rna$exp_group,
+  remove.zeros = TRUE
+)
+
+n_after_zero_filter <- nrow(dge_raw)
+
+keep <- filterByExpr(dge_raw)
+dge_raw <- dge_raw[keep, , keep.lib.sizes = FALSE]
+n_after_expression_filter <- nrow(dge_raw)
+
+outlier_vials <- intersect(
+  colnames(dge_raw),
+  outliers$viallabel[outliers$assay == "TRNSCRPT"]
+)
+
+dge_raw <- dge_raw[
+  ,
+  !colnames(dge_raw) %in% outlier_vials
+]
+
+tibble(
+  Stage = c(
+    "Input count matrix",
+    "After removing all-zero features",
+    "After filterByExpr",
+    "After published outlier removal"
+  ),
+  Features = c(
+    nrow(count_mat),
+    n_after_zero_filter,
+    n_after_expression_filter,
+    nrow(dge_raw)
+  ),
+  Samples = c(
+    ncol(count_mat),
+    ncol(count_mat),
+    ncol(count_mat),
+    ncol(dge_raw)
+  )
+) %>%
+  kable(
+    caption = "Transcriptomic filtering checkpoints.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+### Standardize QC covariates and normalize libraries
+
+Missing QC values are mean-imputed. Each QC covariate is then centered and scaled. TMM normalization factors are recalculated after sample removal.
+
+```{r}
+#| label: rna-normalization
+
+qc_covariates <- c(
+  "rin",
+  "pct_globin",
+  "pct_umi_dup",
+  "median_5_3_bias"
+)
+
+dge_raw$samples <- dge_raw$samples %>%
+  mutate(
+    across(
+      all_of(qc_covariates),
+      function(x) {
+        x[is.na(x)] <- mean(x, na.rm = TRUE)
+        as.numeric(scale(x))
+      }
+    )
+  )
+
+dge_raw <- calcNormFactors(dge_raw, method = "TMM")
+
+dge_raw$samples %>%
+  summarise(
+    across(
+      all_of(qc_covariates),
+      list(mean = mean, sd = sd)
+    )
+  ) %>%
+  pivot_longer(
+    everything(),
+    names_to = c("Covariate", ".value"),
+    names_pattern = "(.*)_(mean|sd)"
+  ) %>%
+  kable(
+    digits = 3,
+    caption = "Standardized RNA quality covariates."
+  )
+```
+
+### Fit the RNA model
+
+`voomWithQualityWeights()` accounts for the RNA-seq mean–variance relationship and estimates sample-level quality weights. Weighted feature-wise models are then fit with `limma`; empirical-Bayes moderation stabilizes their variance estimates.
+
+```{r}
+#| label: rna-model
+
+model_formula <- paste(
+  "~ 0 + exp_group +",
+  paste(qc_covariates, collapse = " + ")
+)
+
+rna_design <- model.matrix(
+  as.formula(model_formula),
+  data = dge_raw$samples
+)
+colnames(rna_design) <- sub(
+  "^exp_group",
+  "",
+  colnames(rna_design)
+)
+
+rna_contrast_matrix <- makeContrasts(
+  contrasts = "M_SED - F_SED",
+  levels = rna_design
+)
+
+voom_fit <- voomWithQualityWeights(
+  counts = dge_raw,
+  design = rna_design,
+  var.group = factor(dge_raw$samples$viallabel),
+  plot = FALSE
+)
+
+rna_linear_fit <- lmFit(voom_fit, rna_design)
+rna_contrast_fit <- contrasts.fit(
+  rna_linear_fit,
+  rna_contrast_matrix
+)
+rna_contrast_fit <- eBayes(
+  rna_contrast_fit,
+  robust = TRUE
+)
+
+watsc_rna_MvF_SED <- topTable(
+  fit = rna_contrast_fit,
+  coef = 1,
+  number = Inf,
+  adjust.method = "BH",
+  sort.by = "none"
+) %>%
+  mutate(
+    contrast = "M_SED - F_SED",
+    se = logFC / t
+  ) %>%
+  arrange(adj.P.Val, P.Value, feature_ID) %>%
+  select(-any_of("B"))
+
+direction_summary(watsc_rna_MvF_SED) %>%
+  mutate(Omic = "TRNSCRPT", .before = 1) %>%
+  kable(
+    caption = "Transcript-level differential-analysis checkpoint.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+Of the `r scales::comma(nrow(watsc_rna_MvF_SED))` tested transcripts, `r scales::comma(sum(watsc_rna_MvF_SED$adj.P.Val < fdr_cutoff))` are significant. The published article reports 10,336 significant transcripts.
+
+### Transcript volcano plot
+
+```{r}
+#| label: rna-volcano
+#| fig-cap: "Transcriptomic differential expression in sedentary male versus female WAT-SC."
+#| fig-width: 7
+#| fig-height: 5.5
+
+watsc_rna_volcano_df <- watsc_rna_MvF_SED %>%
+  mutate(
+    plot_p = pmax(adj.P.Val, .Machine$double.xmin),
+    neg_log10_fdr = -log10(plot_p),
+    direction = case_when(
+      adj.P.Val < fdr_cutoff & logFC > 0 ~ "Higher in male",
+      adj.P.Val < fdr_cutoff & logFC < 0 ~ "Higher in female",
+      TRUE ~ "Not significant"
+    ),
+    direction = factor(
+      direction,
+      levels = c(
+        "Higher in female",
+        "Higher in male",
+        "Not significant"
+      )
+    ),
+    feature_label = case_when(
+      !is.na(gene_symbol) & gene_symbol != "" ~ gene_symbol,
+      !is.na(entrez_gene) & entrez_gene != "" ~ entrez_gene,
+      TRUE ~ feature_ID
+    )
+  )
+
+rna_direction_counts <- watsc_rna_volcano_df %>%
+  count(direction) %>%
+  mutate(label = paste0(direction, ": ", scales::comma(n))) %>%
+  pull(label) %>%
+  paste(collapse = "   ")
+
+rna_genes_of_interest <- c(
+  "Sod1", "Car2", "Gsta1", "Fads2",
+  "Kit", "Eif2s3", "Dapk1", "Adipoq", "Slc2a4"
+)
+
+rna_volcano_labels <- watsc_rna_volcano_df %>%
+  filter(feature_label %in% rna_genes_of_interest)
+
+rna_volcano_plot <- ggplot(
+  watsc_rna_volcano_df,
+  aes(x = logFC, y = neg_log10_fdr, color = direction)
+) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_hline(
+    yintercept = -log10(fdr_cutoff),
+    linewidth = 0.5,
+    linetype = "dashed",
+    color = "grey35"
+  ) +
+  geom_label_repel(
+    data = rna_volcano_labels,
+    aes(label = feature_label),
+    color = "black",
+    size = 3,
+    min.segment.length = 0,
+    box.padding = 1,
+    label.padding = 0.2,
+    label.size = 0.2,
+    max.overlaps = Inf,
+    show.legend = FALSE
+  ) +
+  scale_y_continuous(
+    limits = c(0, 30),
+    breaks = seq(0, 30, 10),
+    expand = expansion(mult = 0.01)
+  ) +
+  scale_color_manual(
+    values = c(
+      "Higher in female" = "#ff6eff",
+      "Higher in male" = "#5555ff",
+      "Not significant" = "grey70"
+    ),
+    drop = FALSE
+  ) +
+  theme_classic(base_size = 10) +
+  theme(
+    panel.grid = element_line(
+      color = "grey75",
+      linewidth = 0.2
+    )
+  ) +
+  labs(
+    title = "Sedentary male vs female WAT-SC transcript expression",
+    subtitle = rna_direction_counts,
+    x = expression(log[2] * "(fold change): Male - Female"),
+    y = expression(-log[10] * "(BH-adjusted p-value)"),
+    color = NULL
+  )
+
+rna_volcano_plot
+```
+
+## Proteomic differential analysis
+
+### Align protein data and annotations
+
+```{r}
+#| label: protein-align-data
+
+prot_mat <- prot_norm %>%
+  select(feature_ID, where(is.numeric)) %>%
+  column_to_rownames("feature_ID") %>%
+  as.matrix()
+
+p_data_prot <- p_data %>%
+  filter(viallabel %in% colnames(prot_mat))
+
+prot_mat <- prot_mat[, rownames(p_data_prot)]
+
+stopifnot(identical(rownames(p_data_prot), colnames(prot_mat)))
+
+prot_f_data <- feature_to_gene %>%
+  filter(feature_ID %in% rownames(prot_mat)) %>%
+  select(feature_ID, gene_symbol, entrez_gene) %>%
+  distinct() %>%
+  group_by(feature_ID) %>%
+  filter(
+    !(is.na(gene_symbol) & any(!is.na(gene_symbol)))
+  ) %>%
+  ungroup() %>%
+  as.data.frame()
+
+rownames(prot_f_data) <- prot_f_data$feature_ID
+prot_f_data <- prot_f_data[rownames(prot_mat), ]
+
+stopifnot(identical(rownames(prot_f_data), rownames(prot_mat)))
+
+tibble(
+  Measure = c(
+    "Protein features",
+    "Protein samples",
+    "Features with gene symbol",
+    "Features with Entrez identifier"
+  ),
+  Count = c(
+    nrow(prot_mat),
+    ncol(prot_mat),
+    sum(!is.na(prot_f_data$gene_symbol)),
+    sum(!is.na(prot_f_data$entrez_gene))
+  )
+) %>%
+  kable(
+    caption = "Aligned proteomic input.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+### Fit the protein model
+
+The normalized protein matrix is modeled with one coefficient for each sex-by-timepoint group. Array weights account for sample-level heterogeneity. The explicit `legacy = TRUE` preserves the historical robust empirical-Bayes behavior used when the published result object was generated.
+
+```{r}
+#| label: protein-model
+
+protein_design <- model.matrix(
+  ~ 0 + exp_group,
+  data = p_data_prot
+)
+colnames(protein_design) <- sub(
+  "^exp_group",
+  "",
+  colnames(protein_design)
+)
+
+protein_contrast_matrix <- makeContrasts(
+  "M_SED - F_SED",
+  levels = protein_design
+)
+
+protein_sample_weights <- arrayWeights(
+  object = prot_mat,
+  design = protein_design,
+  var.group = p_data_prot$viallabel
+)
+
+protein_linear_fit <- lmFit(
+  object = prot_mat,
+  design = protein_design,
+  weights = protein_sample_weights
+)
+
+protein_contrast_fit <- contrasts.fit(
+  protein_linear_fit,
+  protein_contrast_matrix
+)
+protein_contrast_fit <- eBayes(
+  protein_contrast_fit,
+  trend = TRUE,
+  robust = TRUE,
+  legacy = TRUE
+)
+
+prot_MvF_SED <- topTable(
+  fit = protein_contrast_fit,
+  coef = 1,
+  number = Inf,
+  adjust.method = "BH",
+  sort.by = "none"
+) %>%
+  rownames_to_column("feature_ID") %>%
+  left_join(prot_f_data, by = "feature_ID") %>%
+  mutate(
+    contrast = "M_SED - F_SED",
+    se = logFC / t
+  ) %>%
+  arrange(adj.P.Val, P.Value, feature_ID)
+
+direction_summary(prot_MvF_SED) %>%
+  mutate(Omic = "PROT", .before = 1) %>%
+  kable(
+    caption = "Protein-level differential-analysis checkpoint.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+Of the `r scales::comma(nrow(prot_MvF_SED))` tested proteins, `r scales::comma(sum(prot_MvF_SED$adj.P.Val < fdr_cutoff))` are significant. The published article reports 4,226 significant proteins.
+
+### Protein volcano plot
+
+```{r}
+#| label: protein-volcano
+#| fig-cap: "Proteomic differential abundance in sedentary male versus female WAT-SC."
+#| fig-width: 7
+#| fig-height: 5.5
+
+protein_volcano_df <- prot_MvF_SED %>%
+  mutate(
+    plot_p = pmax(adj.P.Val, .Machine$double.xmin),
+    neg_log10_fdr = -log10(plot_p),
+    direction = case_when(
+      adj.P.Val < fdr_cutoff & logFC > 0 ~ "Higher in male",
+      adj.P.Val < fdr_cutoff & logFC < 0 ~ "Higher in female",
+      TRUE ~ "Not significant"
+    ),
+    direction = factor(
+      direction,
+      levels = c(
+        "Higher in female",
+        "Higher in male",
+        "Not significant"
+      )
+    )
+  )
+
+protein_direction_counts <- protein_volcano_df %>%
+  count(direction) %>%
+  mutate(label = paste0(direction, ": ", scales::comma(n))) %>%
+  pull(label) %>%
+  paste(collapse = "   ")
+
+proteins_of_interest <- c(
+  "Apeh", "Gm2a", "Sod1", "Npc2", "Acot1",
+  "Lmnb1", "Rps6ka5", "Col14a1", "Slc2a4", "Adipoq"
+)
+
+protein_volcano_labels <- protein_volcano_df %>%
+  filter(gene_symbol %in% proteins_of_interest)
+
+protein_volcano_plot <- ggplot(
+  protein_volcano_df,
+  aes(x = logFC, y = neg_log10_fdr, color = direction)
+) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_hline(
+    yintercept = -log10(fdr_cutoff),
+    linewidth = 0.5,
+    linetype = "dashed",
+    color = "grey35"
+  ) +
+  geom_label_repel(
+    data = protein_volcano_labels,
+    aes(label = gene_symbol),
+    color = "black",
+    size = 3,
+    min.segment.length = 0,
+    box.padding = 0.5,
+    label.padding = 0.2,
+    label.size = 0.2,
+    max.overlaps = Inf,
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(limits = c(-11, 15), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, 30), expand = expansion(mult = 0.05)) +
+  scale_color_manual(
+    values = c(
+      "Higher in female" = "#ff6eff",
+      "Higher in male" = "#5555ff",
+      "Not significant" = "grey70"
+    ),
+    drop = FALSE
+  ) +
+  theme_classic(base_size = 10) +
+  theme(
+    panel.grid = element_line(
+      color = "grey75",
+      linewidth = 0.2
+    )
+  ) +
+  labs(
+    title = "Sedentary male vs female WAT-SC protein expression",
+    subtitle = protein_direction_counts,
+    x = expression(log[2] * "(fold change): Male - Female"),
+    y = expression(-log[10] * "(BH-adjusted p-value)"),
+    color = NULL
+  )
+
+protein_volcano_plot
+```
+
+The transcript and protein volcano plots reproduce the two relevant portions of Figure 2a. The paper additionally presents phosphosite and metabolite panels, which are outside the scope of the five scripts used here.
+
+## Fast gene set enrichment analysis (FGSEA)
+
+For each omic, features are ranked by
+
+$$
+-\log_{10}(P)\times\operatorname{sign}(\log_2\mathrm{FC}).
+$$
+
+A GO pathway is tested only when at least 85% of its original members were measured and at least 15 measured members remain. FGSEA uses `fgseaMultilevel()`, seed 0, 10,000 simple permutations, and serial execution. BH adjustment is performed within each GO subcategory (BP, CC, or MF), matching the source analysis.
+
+### Load GO pathways
+
+The MSigDB pathway object is an analysis input rather than a previously calculated WAT-SC result. It contains pathway annotations and Entrez-gene membership lists.
+
+`msigdb_pathways.rds` was generated using the script `code/msigdb-pathway-exploration-Jade-20260729.R`
+
+```{r}
+#| label: load-msigdb-pathways
+
+msigdb_pathways <- readRDS(
+  here("data_msigdb", "msigdb_pathways.rds")
+)
+
+msigdb_pathways %>%
+  count(gs_subcat, name = "Pathways") %>%
+  bind_rows(
+    summarise(
+      msigdb_pathways,
+      gs_subcat = "Total",
+      Pathways = n()
+    )
+  ) %>%
+  kable(
+    caption = "Gene Ontology pathways available before tissue filtering.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+### Transcript ranking and pathway filtering
+
+One-to-many transcript-to-gene mappings are expanded. Duplicate gene/statistic pairs are removed, and the remaining transcript statistics are averaged to obtain one rank per Entrez gene.
+
+```{r}
+#| label: rna-fgsea-preparation
+
+watsc_rna_da_entrez_id <- watsc_rna_MvF_SED %>%
+  separate_rows(entrez_gene, gene_symbol, sep = ";") %>%
+  filter(!is.na(entrez_gene), entrez_gene != "NA") %>%
+  mutate(entrez_gene = as.character(entrez_gene))
+
+gene_symbol_by_entrez_id <- watsc_rna_da_entrez_id %>%
+  select(entrez_gene, gene_symbol) %>%
+  distinct() %>%
+  distinct(entrez_gene, .keep_all = TRUE) %>%
+  deframe()
+
+transcript_ranking_statistics <- watsc_rna_da_entrez_id %>%
+  mutate(
+    ranking_statistic = -log10(P.Value) * sign(logFC)
+  )
+
+stopifnot(
+  !any(!is.finite(transcript_ranking_statistics$ranking_statistic))
+)
+
+gene_level_ranking_table <- transcript_ranking_statistics %>%
+  mutate(
+    contrast,
+    entrez_gene,
+    ranking_statistic,
+    original_row_order = row_number(),
+    .keep = "none"
+  ) %>%
+  distinct(
+    contrast,
+    entrez_gene,
+    ranking_statistic,
+    .keep_all = TRUE
+  ) %>%
+  group_by(contrast, entrez_gene) %>%
+  summarise(
+    ranking_statistic = mean(ranking_statistic),
+    number_of_distinct_transcript_statistics = n(),
+    gene_first_seen = min(original_row_order),
+    .groups = "drop"
+  ) %>%
+  arrange(gene_first_seen)
+
+ranked_genes_by_contrast <- gene_level_ranking_table %>%
+  group_nest(contrast) %>%
+  mutate(
+    ranked_genes = map(
+      data,
+      ~ .x %>%
+        arrange(desc(ranking_statistic), gene_first_seen) %>%
+        select(entrez_gene, ranking_statistic) %>%
+        deframe()
+    )
+  ) %>%
+  select(contrast, ranked_genes) %>%
+  deframe()
+
+watsc_rna_genes_tested <- watsc_rna_da_entrez_id %>%
+  distinct(entrez_gene) %>%
+  pull(entrez_gene)
+
+rna_filtered_go_pathways <- msigdb_pathways %>%
+  mutate(
+    entrez_gene = map(
+      entrez_gene,
+      ~ intersect(
+        as.character(.x),
+        watsc_rna_genes_tested
+      )
+    ),
+    pathway_size_after_tissue_filtering = lengths(entrez_gene),
+    fraction_of_original_pathway_retained =
+      pathway_size_after_tissue_filtering / set_size
+  ) %>%
+  filter(
+    fraction_of_original_pathway_retained >= 0.85,
+    pathway_size_after_tissue_filtering >= 15
+  )
+
+rna_fgsea_preparation_summary <- tibble(
+  Stage = c(
+    "Differential-analysis transcript rows",
+    "Expanded transcript-gene rows",
+    "Rows with Entrez identifiers",
+    "Unique ranked Entrez genes",
+    "GO pathways after RNA coverage filtering"
+  ),
+  Count = c(
+    nrow(watsc_rna_MvF_SED),
+    nrow(
+      watsc_rna_MvF_SED %>%
+        separate_rows(entrez_gene, gene_symbol, sep = ";")
+    ),
+    nrow(watsc_rna_da_entrez_id),
+    nrow(gene_level_ranking_table),
+    nrow(rna_filtered_go_pathways)
+  )
+)
+
+kable(
+  rna_fgsea_preparation_summary,
+  caption = "Transcriptomic FGSEA preparation checkpoints.",
+  format.args = list(big.mark = ",")
+)
+```
+
+### Run transcriptomic FGSEA
+
+```{r}
+#| label: run-rna-fgsea
+#| results: hide
+
+rna_entrez_ids_by_go_pathway <- rna_filtered_go_pathways %>%
+  select(gs_exact_source, entrez_gene) %>%
+  deframe()
+
+set.seed(0)
+
+rna_fgsea_by_contrast <- purrr::imap(
+  ranked_genes_by_contrast,
+  ~ {
+    set.seed(0)
+    fgseaMultilevel(
+      pathways = rna_entrez_ids_by_go_pathway,
+      stats = .x,
+      nPermSimple = 10000L,
+      BPPARAM = SerialParam(progressbar = FALSE)
+    ) %>%
+      as_tibble() %>%
+      mutate(contrast = .y)
+  }
+)
+
+rna_go_annotations <- rna_filtered_go_pathways %>%
+  select(gs_subcat, gs_exact_source, gs_description) %>%
+  distinct()
+
+rna_fgsea <- rna_fgsea_by_contrast %>%
+  bind_rows() %>%
+  left_join(
+    rna_go_annotations,
+    by = c("pathway" = "gs_exact_source")
+  ) %>%
+  group_by(gs_subcat) %>%
+  mutate(padj = p.adjust(pval, method = "BH")) %>%
+  ungroup() %>%
+  mutate(
+    leadingEdge_genes = map(
+      leadingEdge,
+      ~ unname(
+        gene_symbol_by_entrez_id[as.character(.x)]
+      )
+    )
+  ) %>%
+  select(
+    pathway,
+    gs_subcat,
+    gs_description,
+    pval,
+    padj,
+    log2err,
+    ES,
+    NES,
+    size,
+    contrast,
+    leadingEdge,
+    leadingEdge_genes
+  )
+
+rna_fgsea %>%
+  group_by(gs_subcat) %>%
+  summarise(
+    Tested = n(),
+    Significant = sum(padj < fdr_cutoff),
+    .groups = "drop"
+  ) %>%
+  kable(
+    caption = "Transcriptomic FGSEA results by GO category.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+### Protein-ranking helper functions
+
+These functions reproduce the ranking and FGSEA wrappers used by the source analysis.
+
+```{r}
+#| label: protein-fgsea-functions
+
+.rank_genes <- function(x, genes, metric) {
+  setDT(x)
+
+  x <- subset(x, subset = !is.na(get(genes)))
+  if (nrow(x) == 0) {
+    stop(sprintf("All entries in '%s' are missing.", genes))
+  }
+
+  x[, rank_metric := eval(parse(text = metric))]
+  cols <- c(genes, "rank_metric")
+  x <- unique(x[, cols, with = FALSE])
+  x <- x[, lapply(.SD, mean, na.rm = TRUE), by = genes]
+
+  stats <- sort(deframe(x), decreasing = TRUE)
+  names(stats) <- as.character(names(stats))
+  stats
+}
+
+rank_genes <- function(
+  x,
+  genes,
+  metric = "-log10(P.Value)*sign(logFC)",
+  contrast_column = "contrast"
+) {
+  if (!(genes %in% colnames(x))) {
+    stop(sprintf("'%s' is not a column in x.", genes))
+  }
+
+  if (!(contrast_column %in% colnames(x))) {
+    warning(
+      sprintf(
+        "'%s' is not a column in x. Output will be a vector.",
+        contrast_column
+      )
+    )
+    stats <- .rank_genes(x, genes = genes, metric = metric)
+  } else {
+    x <- split.data.frame(
+      x = x,
+      f = x[[contrast_column]],
+      drop = TRUE
+    )
+    stats <- lapply(
+      x,
+      .rank_genes,
+      genes = genes,
+      metric = metric
+    )
+  }
+
+  stats
+}
+
+fgsea2 <- function(
+  pathways,
+  stats,
+  gene_column = "entrez_gene",
+  adjust.method = "BH",
+  adjust.globally = TRUE,
+  seed = NULL,
+  ...
+) {
+  adjust.method <- match.arg(
+    adjust.method,
+    choices = p.adjust.methods
+  )
+
+  if (!is.list(stats)) {
+    stop("`stats` must be a named list.")
+  }
+
+  pathways <- as.data.table(pathways)
+  paths <- deframe(
+    pathways[, list(gs_exact_source, get(gene_column))]
+  )
+
+  result <- lapply(
+    names(stats),
+    function(contrast_i) {
+      set.seed(seed)
+      result_i <- fgseaMultilevel(
+        pathways = paths,
+        stats = stats[[contrast_i]],
+        ...
+      )
+      result_i[["contrast"]] <- contrast_i
+      result_i
+    }
+  )
+
+  result <- rbindlist(result)
+  pathways <- pathways[
+    ,
+    list(gs_subcat, gs_exact_source, gs_description)
+  ]
+
+  result <- merge(
+    result,
+    pathways,
+    sort = FALSE,
+    by.x = "pathway",
+    by.y = "gs_exact_source"
+  )
+
+  adjustment_groups <- "gs_subcat"
+  if (!adjust.globally) {
+    adjustment_groups <- c(
+      adjustment_groups,
+      "contrast"
+    )
+  }
+
+  result[
+    ,
+    padj := p.adjust(pval, method = adjust.method),
+    by = adjustment_groups
+  ]
+
+  result
+}
+```
+
+### Prepare and run proteomic FGSEA
+
+```{r}
+#| label: run-protein-fgsea
+#| message: false
+#| warning: false
+
+prot_entrez_to_symbol <- prot_MvF_SED %>%
+  select(entrez_gene, gene_symbol) %>%
+  filter(!is.na(entrez_gene)) %>%
+  distinct() %>%
+  mutate(entrez_gene = as.character(entrez_gene)) %>%
+  deframe()
+
+protein_filtered_go_pathways <- msigdb_pathways %>%
+  mutate(
+    entrez_gene = map(
+      entrez_gene,
+      ~ intersect(
+        as.character(.x),
+        names(prot_entrez_to_symbol)
+      )
+    ),
+    set_size_post = lengths(entrez_gene),
+    ratio = set_size_post / set_size
+  ) %>%
+  filter(
+    ratio >= 0.85,
+    set_size_post >= 15
+  )
+
+protein_filtered_go_pathways %>%
+  count(gs_subcat, name = "Retained pathways") %>%
+  bind_rows(
+    summarise(
+      protein_filtered_go_pathways,
+      gs_subcat = "Total",
+      `Retained pathways` = n()
+    )
+  ) %>%
+  kable(
+    caption = "GO pathways retained after proteome-coverage filtering.",
+    format.args = list(big.mark = ",")
+  )
+
+protein_ranks <- rank_genes(
+  as.data.frame(prot_MvF_SED),
+  genes = "entrez_gene"
+)
+
+protein_fgsea_raw <- fgsea2(
+  pathways = protein_filtered_go_pathways,
+  stats = protein_ranks,
+  seed = 0,
+  nPermSimple = 10000L,
+  adjust.globally = TRUE,
+  BPPARAM = SerialParam(progressbar = FALSE)
+)
+
+protein_fgsea <- protein_fgsea_raw %>%
+  as_tibble() %>%
+  mutate(
+    leadingEdge_genes = map(
+      leadingEdge,
+      ~ na.omit(
+        prot_entrez_to_symbol[as.character(.x)]
+      )
+    )
+  ) %>%
+  select(
+    pathway,
+    gs_subcat,
+    gs_description,
+    pval,
+    padj,
+    log2err,
+    ES,
+    NES,
+    size,
+    contrast,
+    leadingEdge,
+    leadingEdge_genes
+  )
+
+protein_fgsea %>%
+  group_by(gs_subcat) %>%
+  summarise(
+    Tested = n(),
+    Significant = sum(padj < fdr_cutoff),
+    .groups = "drop"
+  ) %>%
+  kable(
+    caption = "Proteomic FGSEA results by GO category.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+## Cross-omic pathway analysis
+
+Only pathways tested in both transcriptomics and proteomics are included in the cross-omic comparison.
+
+```{r}
+#| label: join-fgsea-results
+
+shared_pathway_results <- inner_join(
+  rna_fgsea %>%
+    select(
+      pathway,
+      gs_subcat,
+      gs_description,
+      rna_padj = padj,
+      rna_NES = NES
+    ),
+  protein_fgsea %>%
+    select(
+      pathway,
+      gs_subcat,
+      gs_description,
+      protein_padj = padj,
+      protein_NES = NES
+    ),
+  by = c(
+    "pathway",
+    "gs_subcat",
+    "gs_description"
+  )
+) %>%
+  mutate(
+    significant_in_both =
+      rna_padj < fdr_cutoff &
+      protein_padj < fdr_cutoff,
+    quadrant = case_when(
+      protein_NES > 0 & rna_NES > 0 ~ "Q1",
+      protein_NES < 0 & rna_NES > 0 ~ "Q2",
+      protein_NES < 0 & rna_NES < 0 ~ "Q3",
+      protein_NES > 0 & rna_NES < 0 ~ "Q4",
+      TRUE ~ NA_character_
+    )
+  )
+
+shared_pathway_results %>%
+  group_by(gs_subcat) %>%
+  summarise(
+    `Tested in both` = n(),
+    `Significant in both` = sum(significant_in_both),
+    .groups = "drop"
+  ) %>%
+  bind_rows(
+    summarise(
+      shared_pathway_results,
+      gs_subcat = "Total",
+      `Tested in both` = n(),
+      `Significant in both` = sum(significant_in_both)
+    )
+  ) %>%
+  kable(
+    caption = "GO pathways tested and significant in both omes.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+## Figure 2b: concordance of pathway enrichment
+
+The scatterplot compares protein and transcript NES for every pathway tested in both omes. Black points are significant in both; gray points are not. Agreement in sign places a pathway in the upper-right or lower-left quadrant.
+
+```{r}
+#| label: figure-2b
+#| fig-cap: "Transcriptomic versus proteomic NES for shared GO pathways."
+#| fig-width: 5
+#| fig-height: 7
+
+figure_2b <- ggplot(
+  shared_pathway_results,
+  aes(
+    x = protein_NES,
+    y = rna_NES,
+    color = significant_in_both
+  )
+) +
+  geom_vline(
+    xintercept = 0,
+    linetype = "dashed",
+    color = "black",
+    linewidth = 0.3
+  ) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed",
+    color = "black",
+    linewidth = 0.3
+  ) +
+  geom_point(size = 2, shape = 16, alpha = 0.8) +
+  facet_grid(
+    rows = vars(gs_subcat),
+    space = "free_y"
+  ) +
+  scale_color_manual(
+    values = c(
+      "FALSE" = "grey85",
+      "TRUE" = "black"
+    ),
+    breaks = TRUE,
+    name = NULL,
+    labels = "Significantly enriched in both omes"
+  ) +
+  theme_bw(base_size = 10) +
+  theme(
+    legend.position = "top",
+    strip.background = element_blank()
+  ) +
+  labs(
+    title = "Scatterplots of normalized enrichment scores",
+    subtitle = "WAT-SC of sedentary male vs female rats",
+    x = "NES: PROT",
+    y = "NES: TRNSCRPT"
+  )
+
+figure_2b
+```
+
+## Figure 2c: selected concordant pathways
+
+The selected terms emphasize the strongest jointly significant enrichments within each GO category while retaining terms outside the male-enriched upper-right quadrant. Circles represent proteins and triangles represent transcripts. Blue (positive NES) indicates male enrichment and pink (negative NES) indicates female enrichment.
+
+```{r}
+#| label: select-figure-2c-pathways
+
+ranked_significant_pathways <- shared_pathway_results %>%
+  filter(significant_in_both) %>%
+  mutate(
+    mean_absolute_NES =
+      (abs(protein_NES) + abs(rna_NES)) / 2
+  ) %>%
+  group_by(gs_subcat) %>%
+  arrange(
+    desc(mean_absolute_NES),
+    .by_group = TRUE
+  ) %>%
+  mutate(
+    number_outside_Q1 = sum(quadrant != "Q1"),
+    number_of_Q1_terms_to_keep =
+      10L - number_outside_Q1
+  ) %>%
+  group_by(gs_subcat, quadrant) %>%
+  mutate(
+    rank_within_quadrant = row_number()
+  ) %>%
+  ungroup()
+
+selected_figure_2c_pathways <- ranked_significant_pathways %>%
+  filter(
+    (
+      quadrant != "Q1" &
+        rank_within_quadrant <= number_outside_Q1
+    ) |
+      (
+        quadrant == "Q1" &
+          rank_within_quadrant <= number_of_Q1_terms_to_keep
+      )
+  ) %>%
+  pull(pathway)
+
+shared_pathway_results_selected <- shared_pathway_results %>%
+  filter(pathway %in% selected_figure_2c_pathways) %>%
+  select(
+    pathway,
+    gs_subcat,
+    gs_description,
+    rna_NES,
+    protein_NES
+  ) %>%
+  pivot_longer(
+    cols = c(rna_NES, protein_NES),
+    names_to = "omic",
+    values_to = "NES"
+  ) %>%
+  mutate(
+    omic = recode(
+      omic,
+      "rna_NES" = "TRNSCRPT",
+      "protein_NES" = "PROT"
+    )
+  ) %>%
+  arrange(NES) %>%
+  mutate(
+    gs_description = factor(
+      gs_description,
+      levels = unique(gs_description)
+    )
+  )
+
+shared_pathway_results_selected %>%
+  distinct(gs_subcat, pathway) %>%
+  count(gs_subcat, name = "Selected pathways") %>%
+  kable(
+    caption = "Number of pathways displayed in Figure 2c."
+  )
+```
+
+```{r}
+#| label: figure-2c
+#| fig-cap: "Selected pathways significantly enriched in both transcriptomics and proteomics."
+#| fig-width: 9
+#| fig-height: 8
+
+figure_2c <- ggplot(
+  shared_pathway_results_selected,
+  aes(
+    x = NES,
+    y = gs_description,
+    shape = omic,
+    color = NES
+  )
+) +
+  geom_vline(
+    xintercept = c(-1, 1),
+    color = "black",
+    linetype = "dashed",
+    linewidth = 0.3
+  ) +
+  geom_point(size = 3.6) +
+  facet_grid(
+    rows = vars(gs_subcat),
+    scales = "free_y",
+    space = "free_y",
+    switch = "y"
+  ) +
+  scale_y_discrete(name = NULL, position = "right") +
+  scale_color_gradientn(
+    colors = c(
+      "#ff6eff",
+      "white",
+      "white",
+      "#5555ff"
+    ),
+    values = scales::rescale(c(-2.5, -1, 1, 2.9))
+  ) +
+  scale_shape_manual(
+    name = NULL,
+    values = c(
+      "PROT" = 16,
+      "TRNSCRPT" = 17
+    )
+  ) +
+  guides(
+    color = guide_colorbar(
+      barwidth = unit(0.6, "in"),
+      barheight = unit(0.07, "in"),
+      frame.colour = "black",
+      ticks.colour = "black",
+      order = 1
+    ),
+    shape = guide_legend(
+      title = NULL,
+      order = 2,
+      keyheight = unit(7, "pt"),
+      keywidth = unit(7, "pt")
+    )
+  ) +
+  theme_bw(base_size = 10) +
+  theme(
+    axis.text = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.ticks.y = element_blank(),
+    axis.ticks.x = element_line(
+      color = "black",
+      linewidth = 0.3
+    ),
+    strip.background = element_blank(),
+    strip.text = element_text(
+      size = 6.5,
+      color = "black"
+    ),
+    panel.spacing.y = unit(3, "pt"),
+    panel.border = element_rect(
+      fill = NA,
+      color = "black",
+      linewidth = 0.3
+    ),
+    panel.grid = element_blank(),
+    panel.grid.major.y = element_line(
+      linewidth = 0.3,
+      color = "grey92"
+    ),
+    plot.margin = margin(t = 20, unit = "pt"),
+    legend.position = "top",
+    legend.direction = "horizontal",
+    legend.box = "horizontal"
+  ) +
+  labs(
+    title = "Selected pathways significantly enriched in both omes",
+    subtitle = paste(
+      "WAT-SC of sedentary male vs female rats,",
+      "transcriptomics and proteomics"
+    )
+  )
+
+figure_2c
+```
+
+The replicated biology agrees with the publication: oxidative metabolism, mitochondrial complex assembly, branched-chain amino-acid catabolism, proteasome-related terms, and ribosomal terms are jointly enriched in males. Lamellipodium and actin-filament-bundle terms are jointly enriched in females.
+
+## Reproducibility summary
+
+```{r}
+#| label: final-reproducibility-summary
+
+tibble(
+  Checkpoint = c(
+    "Significant transcripts",
+    "Significant proteins",
+    "Pathways tested in both omes",
+    "Pathways significant in both omes"
+  ),
+  `Notebook result` = c(
+    sum(watsc_rna_MvF_SED$adj.P.Val < fdr_cutoff),
+    sum(prot_MvF_SED$adj.P.Val < fdr_cutoff),
+    nrow(shared_pathway_results),
+    sum(shared_pathway_results$significant_in_both)
+  ),
+  `Expected result` = c(
+    10336,
+    4226,
+    382,
+    52
+  )
+) %>%
+  mutate(
+    Match = `Notebook result` == `Expected result`
+  ) %>%
+  kable(
+    caption = "End-to-end reproducibility checkpoints.",
+    format.args = list(big.mark = ",")
+  )
+```
+
+The first two expected values are the headline transcript and protein counts reported by Many et al. The cross-omic pathway counts are checkpoints from the replication scripts.
+
+The plotted scope is TRNSCRPT and PROT. PHOSPHO and METAB panels from the published Figure 2a are not generated by the five scripts.
+
+
+## Session information
+
+The following information records the computational environment used to render this notebook.
+
+```{r}
+#| label: session-information
+#| echo: true
+
+sessionInfo()
+```
+
+
+
+## Gen AI usage
+
+Codex (GPT 5.6 Sol Light) was used to compile of this Quarto document based on the 5 R analysis. Specific prompts are as follows:
+
+> Within `code`, there are 5 scripts that start with the name `watsc`. They go through an analysis pipeline that takes RNA (or TRNSCRPT) and protein (or PROT) data, conduct differential analysis (da) and FGSEA, generating volcao plots and scatterplots of NES. This is a replication study of Many et al Nature Metab 2024 (https://www.nature.com/articles/s42255-023-00959-9#Sec36). Specifically Figure 2a, 2b, and 2c. Help me create a single Quarto document that showcases these analysis. Do not change the code, unless you detect a mistake. There should be outputs along the way for important steps (how many genes or features). The generated plots should be part of the Quarto document. We can include the code for export files and graphs, but not need to run those blocks, since we have that in .R scripts
+
+Followed by:
+
+> I have moved the Qmd documents to `output_notebook` and renamed it. Good start. But I think we do want to actually run the code chunks for the analysis steps in the Qmd documents. So the Qmd document can be a stand alone file with the entire pipeline. The only exception is that we don't need to include code for exporting the csv, rda, or png plots. But we'd want to include the code used to generate them. Please revise the Qmd file based on these instructions
+
+The output from these prompts (i.e., this Quarto document) has been reviewed and edited by the DeCoDe MoTrPAC team.
+
+## References
+
+Many, G. M., Sanford, J. A., Sagendorf, T. J., et al. (2024). [Sexual dimorphism and the multi-omic response to exercise training in rat subcutaneous white adipose tissue](https://doi.org/10.1038/s42255-023-00959-9). *Nature Metabolism*, 6, 963–979.
+
+MoTrPAC. [MotrpacRatTraining6moWATData](https://github.com/MoTrPAC/MotrpacRatTraining6moWATData/).

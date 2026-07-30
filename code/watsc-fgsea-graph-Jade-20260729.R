@@ -1,5 +1,11 @@
 # Goal -----
+# Reproduce Many et al Nat Metab 2024 Figure 2b and 2c using our FGSEA
 
+
+# Load libraries ----
+library(tidyverse)
+library(here)
+library(grid)
 
 
 # Load data ----
@@ -14,7 +20,6 @@ shared_pathway_results <- inner_join(
   protein_fgsea %>% select(pathway, gs_subcat, gs_description, protein_padj = padj, protein_NES = NES),
   by = c("pathway", "gs_subcat", "gs_description")
 ) %>%
-#  filter(rna_padj < 0.05 | protein_padj < 0.05) %>%
   mutate(significant_in_both = (rna_padj < 0.05 & protein_padj < 0.05),
          quadrant = case_when(
            protein_NES > 0 & rna_NES > 0 ~ "Q1",
@@ -35,9 +40,9 @@ ggplot(data = shared_pathway_results,
        mapping = aes(x = protein_NES, y = rna_NES, color = significant_in_both)) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "black", linewidth = 0.3) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black", linewidth = 0.3) +
-  geom_point(size = 1, shape = 16, alpha = 0.8) +
+  geom_point(size = 2, shape = 16, alpha = 0.8) +
   facet_grid(rows = vars(gs_subcat), space = "free_y") +
-  scale_color_manual(values = c("TRUE" = "black", "FALSE" = "grey"), breaks = TRUE,
+  scale_color_manual(values = c("FALSE" = "grey85", "TRUE" = "black"), breaks = TRUE,
                      name = NULL, labels = "Significantly enriched in both -omes") +
   theme_bw(base_size = 10) +
   theme(legend.position = "top",
@@ -47,13 +52,13 @@ ggplot(data = shared_pathway_results,
        x = "NES: PROT", y = "NES: TRNSCRPT")
 
 ggsave(here("plots", "watsc_rna_protein_NES_MvF_SED_scatterplot.png"),
-       height = 7, width = 4, dpi = 300, units = "in")
+       height = 6, width = 4, dpi = 300, units = "in")
 
 
 
 # Select the terms displayed in Figure 2C ----
-# first rank signficant pathways by the mean absolute NES across the two omics
-# within each GO category, retain every non-Q1 pathway and then fill the remaining positions, 
+# first rank signficant pathways by the mean absolute NES across the two omics within each GO category, 
+# retain every non-Q1 pathway and then fill the remaining positions, 
 # up to approximately 10, with Q1 terms.
 
 ranked_significant_pathways <- shared_pathway_results %>%
@@ -114,11 +119,9 @@ ggplot(data = shared_pathway_results_selected,
         legend.position = "top",
         legend.direction = "horizontal",
         legend.box = "horizontal") +
-  labs(title = "Selected pathways that are significant enriched in both -omes",
+  labs(title = "Selected pathways that are significantly enriched in both -omes",
        subtitle = "WAT-SC of SED male vs female, transcriptomics and proteomics")
 
 
 ggsave(here("plots", "watsc_rna_protein_pathway_NES_MvF_SED_scatterplot.png"),
        height = 7, width = 7, dpi = 300, units = "in")
-
-

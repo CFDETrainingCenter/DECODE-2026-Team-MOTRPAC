@@ -4,6 +4,10 @@
 # plolty files
 /plots/*plotly_files/
 
+# figures from rendering qmd files
+/output_notebooks/figure/
+
+
 # Rplot.pdf
 /Rplots.pdf
 

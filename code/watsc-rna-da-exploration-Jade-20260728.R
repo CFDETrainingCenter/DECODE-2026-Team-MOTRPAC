@@ -378,8 +378,6 @@ watsc_rna_MvF_SED_volcano <- ggplot(data = watsc_rna_MvF_SED_volcano_df,
         ) +
   labs(title = "Sedentary male vs female WAT-SC transcript expression",
        subtitle = direction_counts,
-       x = expression(log[2] * "(fold change): Male - Female"),
-       y = expression(-log[10] * "(BH-adjusted p-value)"),
        color = NULL)
 
 watsc_rna_MvF_SED_volcano
@@ -400,7 +398,10 @@ watsc_rna_MvF_SED_volcano +
                    mapping = aes(label = feature_label), color = "black",
                    size = 3, min.segment.length = 0, box.padding = 1,
                    label.padding = 0.2, label.size = 0.2,
-                   max.overlaps = Inf, show.legend = FALSE)
+                   max.overlaps = Inf, show.legend = FALSE) +
+  # adding the x-axis and y-axis label here bc it's creating issues with plotly
+  labs(x = expression(log[2] * "(fold change): Male - Female"),
+       y = expression(-log[10] * "(BH-adjusted p-value)"))
 
 ggsave(path = here("plots"), filename = "watsc_rna_MvF_SED_volcano.png", 
        width = 6.5, height = 5, unit = "in", dpi = 300, bg = "white")
@@ -412,7 +413,9 @@ library(plotly)
 library(htmlwidgets)
 
 watsc_rna_MvF_SED_volcano_plotly <- plotly::ggplotly(
-  watsc_rna_MvF_SED_volcano,
+  watsc_rna_MvF_SED_volcano + 
+    labs(x = "log2(fold change): Male - Female",
+         y = "-log10(BH-adjusted p-value)"),
   tooltip = "text"
 )
 
@@ -425,8 +428,5 @@ saveWidget(
 )
 
 
-
 # Clear environment ----
 rm(list = ls())
-
-

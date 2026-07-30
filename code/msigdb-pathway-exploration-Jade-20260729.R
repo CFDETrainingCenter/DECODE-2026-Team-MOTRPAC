@@ -3,6 +3,7 @@
 # Article: https://www.nature.com/articles/s42255-023-00959-9
 # GitHub: https://github.com/MoTrPAC/MotrpacRatTraining6moWATData/
 # Specifically, recreate the MSIGDB_PATHWAYS object used by FGSEA
+# This object will be used in FGSEA
 
 
 # Load libraries -----
@@ -28,6 +29,8 @@ go_collection_info <- msigdbr_collections() %>%
   distinct() %>%
   # retain the order in `go_subcollections`
   slice(match(go_subcollections, gs_subcat))
+
+go_collection_info
 # in msigdbr 7.5.1, GO:BP, GO:MF, and GO:CC are subcollections of C5
 
 
@@ -156,11 +159,9 @@ msigdb_pathways_selected %>%
 
 
 # Export msigdb_pathways_selected ----
-# IMPORTANT! can't save as a csv file bc of the list-column
-save(msigdb_pathways_selected,
-     file = here("data_msigdb", "msigdb_pathways.rda"),
-     version = 3, compress = "bzip2")
-
+# IMPORTANT! Don't save as a csv file bc of the list-column
+saveRDS(msigdb_pathways_selected,
+        file = here("data_msigdb", "msigdb_pathways.rds"))
 
 
 # Clear environment ----
