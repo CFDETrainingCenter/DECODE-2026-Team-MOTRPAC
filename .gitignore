@@ -5,8 +5,8 @@
 /plots/*plotly_files/
 
 # figures from rendering qmd files
-/output_notebooks/figure/
-
+/output_notebooks/figure_heart/
+/output_notebooks/figure_watsc/
 
 # Rplot.pdf
 /Rplots.pdf

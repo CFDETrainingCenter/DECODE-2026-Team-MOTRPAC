@@ -1,10 +1,17 @@
 # Goal -----
-
+# Reproduce the cross-omic integration visuals in the follow script for HEART (M_SED vs F_SED)
+# `watsc-fgsea-graph-Jade-20260729.R`
 
 
 # Load data ----
+library(tidyverse)
+library(here)
+
+
+
+# Import data ----
 rna_fgsea <- readRDS(here("data_processed", "heart_transcriptomics_fgsea.rds"))
-protein_fgsea <- read_csv(here("data_processed", "heart_prot_fgsea.csv"))
+protein_fgsea <- readRDS(here("data_processed", "heart_proteomics_fgsea.rds"))
 
 
 # Join pathways tested in both omics ----
@@ -30,14 +37,14 @@ shared_pathway_results %>%
   count(gs_subcat, significant_in_both)
 
 
-# Figure 2B: transcriptomics vs proteomic NES ----
+# Transcriptomics vs proteomic NES ----
 ggplot(data = shared_pathway_results,
        mapping = aes(x = protein_NES, y = rna_NES, color = significant_in_both)) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "black", linewidth = 0.3) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black", linewidth = 0.3) +
-  geom_point(size = 1, shape = 16, alpha = 0.8) +
+  geom_point(size = 2, shape = 16, alpha = 0.8) +
   facet_grid(rows = vars(gs_subcat), space = "free_y") +
-  scale_color_manual(values = c("TRUE" = "black", "FALSE" = "grey"), breaks = TRUE,
+  scale_color_manual(values = c("FALSE" = "grey85", "TRUE" = "black"), breaks = TRUE,
                      name = NULL, labels = "Significantly enriched in both -omes") +
   theme_bw(base_size = 10) +
   theme(legend.position = "top",
@@ -51,12 +58,10 @@ ggsave(here("plots", "heart_rna_protein_NES_MvF_SED_scatterplot.png"),
 
 
 
-# Select the terms displayed in Figure 2C ----
+# Select the terms displayed----
 # first rank signficant pathways by the mean absolute NES across the two omics
 # within each GO category, retain every non-Q1 pathway and then fill the remaining positions, 
 # up to approximately 10, with Q1 terms.
-
-# Jade's quick note: I think there is some issue with this code, will come back to inspect
 
 ranked_significant_pathways <- shared_pathway_results %>%
   filter(significant_in_both) %>%
@@ -76,7 +81,7 @@ selected_figure_2c_pathways <- ranked_significant_pathways %>%
 
 
 
-# Figure 2C: NES values for selected pathways -----
+# NES values for selected pathways -----
 shared_pathway_results_selected <- shared_pathway_results %>%
   filter(pathway %in% selected_figure_2c_pathways) %>%
   select(pathway, gs_subcat, gs_description, rna_NES, protein_NES) %>%
@@ -117,8 +122,12 @@ ggplot(data = shared_pathway_results_selected,
         legend.direction = "horizontal",
         legend.box = "horizontal") +
   labs(title = "Selected pathways that are significant enriched in both -omes",
-       subtitle = "WAT-SC of SED male vs female, transcriptomics and proteomics")
+       subtitle = "HEART of SED male vs female, transcriptomics and proteomics")
 
 
 ggsave(here("plots", "heart_rna_protein_pathway_NES_MvF_SED_scatterplot.png"),
        height = 7, width = 7, dpi = 300, units = "in")
+
+
+# Clear environment ----
+rm(list = ls())

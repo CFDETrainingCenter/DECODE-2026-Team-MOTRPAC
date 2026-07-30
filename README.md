@@ -16,10 +16,10 @@ Potential users include exercise and cardiovascular researchers, computational b
 
 Endurance exercise training (ExT) benefits cardiovascular health, but sex-specific molecular mechanisms driving cardiac adaptation remain poorly characterized. MoTrPAC generated a large public multi-omic resource that could be used to address this question. Analysis of adipose tissues revealed substantial sexual dimorphism at rest and in the dynamic response to training, with sex-specific signatures preserved or amplified with exercise. No independent replication of this sexual-dimorphism pipeline has been applied to heart tissue, despite matching data being available. 
 
-**Primary Research Question: **
+**Primary Research Question:**
 - Does sedentary heart tissue show sex-specific differences in gene expression and enriched biological pathways, similar to those observed in subcutaneous white adipose tissue?
 
-**Secondary Research Question: **
+**Secondary Research Question:**
 - How does the cardiac transcriptomic/proteomic response to endurance exercise training differ between males and females across the 1-, 2-, 4-, and 8-week time course?
 - Do male and female hearts show distinct co-expression modules (WGCNA) linked to phenotypic measures (VO2max, body composition)?
 - Do the sex-specific pathways identified overlap with known cardiac disease pathways (e.g., hypertrophic/dilated cardiomyopathy, mitochondrial dysfunction)?
@@ -60,7 +60,7 @@ Use WGCNA, module–trait analysis, hub-gene identification, and Gene Ontology e
 | ------------------------------------- | -------------------------------------------- | --------- |
 | Pathway reference construction        | Recreate the GO data                         | Complete  |
 | WAT-SC workflow reproduction          | Reproduce the published Many et al. analysis | Complete  |
-| Heart baseline sex-difference analysis | Compare sedentary males and females          | Clean up  |
+| Heart baseline sex-difference analysis | Compare sedentary males and females         | Complete  |
 | Heart exercise-training response      | Compare response across training time course | To verify |
 | Heart WGCNA             | Identify co-expression modules and phenotype relationships | Complete  |
 | Cardiac-disease pathways mapping       | Relate results to cardiac disease biology   | To verify |
@@ -92,10 +92,11 @@ The published WAT-SC workflow was followed from the original transcriptommics an
 
 **Implementation and outputs**
 
-- Analysis code: `watsc_*.R` files in [`code/`](code/),
-- Rendered notebooks: [`output_notebooks/MoTrPAC_watsc-MvsF-SED.html`](output_notebooks/MoTrPAC_watsc-MvsF-SED.html)
-- Processed results: `watsc_*.csv` or `watsc_*.rds` files in [`data_processed/`](data_processed/), 
-- Figures: `watsc_*.png` or `watsc_*.html` files [`plots/`](plots/)
+- input data: pulled from `MotrpacRatTraining6moWATData`
+- analysis script: `watsc_*.R` files in [`code/`](code/),
+- stand-alone rendered notebook: [`output_notebooks/MoTrPAC_watsc-MvsF-SED.html`](output_notebooks/MoTrPAC_watsc-MvsF-SED.html)
+- processed results: `watsc_*.csv` or `watsc_*.rds` files in [`data_processed/`](data_processed/), 
+- figures: `watsc_*.png` or `watsc_*.html` files [`plots/`](plots/)
 
 
 ### 2. Heart baseline sex-different analysis
@@ -104,7 +105,11 @@ The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomic
 
 **Implementation and outputs**
 
-TBA after repo clean up
+- input data: pulled from `MotrpacRatTraining6moWATData`
+- analysis script: `heart_*.R` files in [`code/`](code/),
+- stand-alone rendered notebook: [`output_notebooks/MoTrPAC_heart-MvsF-SED.html`](output_notebooks/MoTrPAC_heart-MvsF-SED.html)
+- processed results: `heart_*.csv` or `heart_*.rds` files in [`data_processed/`](data_processed/), 
+- figures: `heart_*.png` or `heart_*.html` files [`plots/`](plots/)
 
 
 ### 3. Heart WGCNA Analysis

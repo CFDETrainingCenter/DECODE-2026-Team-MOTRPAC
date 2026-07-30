@@ -2,7 +2,11 @@ library(data.table)
 library(tibble)
 library(fgsea)
 
-heart_pathways <- readRDS(here("data_msigdb", "msigdb_pathways.rds"))
+library(tidyverse)
+library(here)
+
+
+msigdb_pathways <- readRDS(here("data_msigdb", "msigdb_pathways.rds"))
 
 rank_genes <- function(x, genes, metric = "-log10(P.Value)*sign(logFC)", contrast_column = "contrast") {
   if (!(genes %in% colnames(x))) stop(sprintf("'%s' is not a column in x.", genes))
@@ -52,7 +56,8 @@ fgsea2 <- function(pathways, stats, gene_column = "entrez_gene",
   return(res)
 }
 
-# --- Load your proteomics DA ---
+
+# Load your proteomics DA ---
 prot_dea <- read_csv(here("data_processed", "heart_proteomics_da.csv"))
 
 # Check for semicolon-collapsed multi-gene IDs
@@ -60,10 +65,58 @@ sum(grepl(";", prot_dea$entrez_gene), na.rm = TRUE)
 # if nonzero:
 # prot_dea <- prot_dea %>% separate_rows(entrez_gene, sep = ";")
 
-# --- Rank + run FGSEA ---
+
+# Construct the Entrez-to-symbol map used for leading-edge lables ----
+prot_entrez_to_symbol <- prot_dea %>%
+  select(entrez_gene, gene_symbol) %>%
+  filter(!is.na(entrez_gene)) %>%
+  distinct() %>%
+  mutate(entrez_gene = as.character(entrez_gene)) %>%
+  deframe()
+
+head(prot_entrez_to_symbol)
+
+
+
+# Apply the repositories proteome-coverage pathway filter ----
+# keep pathways for which at leats 85% of the original MSigDB members were measured
+# with at least 15 measured memebers remaining, to be consisten with watsc analysis
+
+prot_msigdb <- msigdb_pathways %>%
+  mutate(entrez_gene = map(entrez_gene, 
+                           ~ intersect(as.character(.x), names(prot_entrez_to_symbol))),
+         set_size_post = lengths(entrez_gene),
+         ratio = set_size_post / set_size) %>%
+  filter(ratio >= 0.85,                  # at least 85% of the original set remains
+         set_size_post >= 15)            # at least 15 measured members remaining
+
+table(prot_msigdb$gs_subcat)             # how many gene sets remain?
+#GO:BP GO:CC GO:MF 
+#129    55    42
+
+
+
+# Rank + run FGSEA ---
 prot_ranks <- rank_genes(prot_dea, genes = "entrez_gene")
-heart_prot_fgsea <- fgsea2(pathways = heart_pathways, stats = prot_ranks)
 
-write_csv(heart_prot_fgsea, here("data_processed", "heart_prot_fgsea.csv"))
+prot_fgsea <- fgsea2(pathways = prot_msigdb, stats = prot_ranks,
+                     seed = 0, nPermSimple = 10000,
+                     adjust.globally = TRUE, nproc = 1)
 
-heart_prot_fgsea %>% filter(padj < 0.05) %>% arrange(padj) %>% head(20)
+prot_fgsea_cleaned <- prot_fgsea %>%
+  # map Entrez IDs in leading edge subset to gene symbols
+  mutate(leadingEdge_genes = map(leadingEdge,
+                                 ~ na.omit(prot_entrez_to_symbol[as.character(.x)]))) %>% 
+  # rearrange columns
+  select(pathway, gs_subcat, gs_description,
+         pval, padj, log2err, ES, NES, size,
+         contrast, leadingEdge, leadingEdge_genes)
+
+
+# Export FGSEA results ---
+write_csv(prot_fgsea_cleaned, here("data_processed", "heart_proteomics_fgsea.csv"))
+
+saveRDS(prot_fgsea_cleaned, here("data_processed", "heart_proteomics_fgsea.rds"))
+
+
+prot_fgsea_cleaned %>% filter(padj < 0.05) %>% arrange(padj) %>% head(20)

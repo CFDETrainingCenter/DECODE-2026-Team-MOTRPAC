@@ -1,5 +1,6 @@
 # Goal ----
-# tBA
+# Conduct FGSEA for HEART tissue, comparing M_SED vs F_SED
+# Use similar pipeline as watsc-rna-fgsea-exploration-Jade-20260729.R
 
 
 # Load libraries -----
@@ -18,8 +19,7 @@ dim(rna_da)             # 14575    10
 
 
 ## msigdb pathways 
-load(here("data_msigdb", "msigdb_pathways.rda"))
-msigdb_pathways_selected
+msigdb_pathways <- readRDS(here("data_msigdb", "msigdb_pathways.rds"))
 
 
 
@@ -105,7 +105,7 @@ rna_genes_tested <- rna_da_entrez_id %>%
 min_pathway_coverage <- 0.85
 min_pathway_size_after_filtering <- 15L
 
-tissue_filtered_go_pathways <- msigdb_pathways_selected %>%
+tissue_filtered_go_pathways <- msigdb_pathways %>%
   mutate(entrez_gene = map(entrez_gene, ~ intersect(as.character(.x), rna_genes_tested)),
          pathway_size_after_tissue_filtering = lengths(entrez_gene),
          fraction_of_original_pathway_retained = pathway_size_after_tissue_filtering / set_size) %>%
@@ -113,7 +113,7 @@ tissue_filtered_go_pathways <- msigdb_pathways_selected %>%
          pathway_size_after_tissue_filtering >= min_pathway_size_after_filtering)
 
 nrow(tissue_filtered_go_pathways)       # 2364 retained
-nrow(msigdb_pathways_selected)         # 5106 original
+nrow(msigdb_pathways)                   # 5106 original
 
 
 # convert the filtered pathway table to the named list required by fgsea
@@ -178,3 +178,8 @@ saveRDS(fgsea_results,
         file = here("data_processed", "heart_transcriptomics_fgsea.rds"))
 
 write_csv(fgsea_results, here("data_processed", "heart_transcriptomics_fgsea.csv"))
+
+
+
+# Clear environment ----
+rm(list = ls())

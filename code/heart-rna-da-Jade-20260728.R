@@ -1,5 +1,5 @@
 # Goal -----
-# Conduct the analysis in `20260728-watsc-exploration-Jade.R` for HEART
+# Conduct the analysis in `watsc-rna-da-exploration-Jade-20260728.R` for HEART
 
 # Load library ----
 library(tidyverse)
@@ -325,8 +325,6 @@ rna_MvF_SED_volcano <- ggplot(data = rna_MvF_SED_volcano_df,
   ) +
   labs(title = "Sedentary male vs female HEART transcript expression",
        subtitle = direction_counts,
-       x = expression(log[2] * "(fold change): Male - Female"),
-       y = expression(-log[10] * "(BH-adjusted p-value)"),
        color = NULL)
 
 rna_MvF_SED_volcano
@@ -342,7 +340,9 @@ rna_MvF_SED_volcano +
                    mapping = aes(label = feature_label), color = "black",
                    size = 3, min.segment.length = 0, box.padding = 0.5,
                    label.padding = 0.2, label.size = 0.2,
-                   max.overlaps = Inf, show.legend = FALSE)
+                   max.overlaps = Inf, show.legend = FALSE) +
+  labs(x = expression(log[2] * "(fold change): Male - Female"),
+       y = expression(-log[10] * "(BH-adjusted p-value)"),)
 
 ggsave(path = here("plots"), filename = "heart_rna_MvF_SED_volcano.png", 
        width = 6.5, height = 5, unit = "in", dpi = 300, bg = "white")
@@ -351,7 +351,9 @@ ggsave(path = here("plots"), filename = "heart_rna_MvF_SED_volcano.png",
 
 ### Create plotly ----
 rna_MvF_SED_volcano_plotly <- plotly::ggplotly(
-  rna_MvF_SED_volcano,
+  rna_MvF_SED_volcano+ 
+    labs(x = "log2(fold change): Male - Female",
+         y = "-log10(BH-adjusted p-value)"),
   tooltip = "text"
 )
 
@@ -367,7 +369,3 @@ htmlwidgets::saveWidget(
 
 # Clear environment ----
 rm(list = ls())
-
-
-
-

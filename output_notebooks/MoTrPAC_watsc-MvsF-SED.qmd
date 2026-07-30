@@ -21,7 +21,7 @@ execute:
 knitr:
   opts_chunk:
     root.dir: ..
-    fig.path: figure/
+    fig.path: figure_watsc/
 ---
 
 ## Study objective

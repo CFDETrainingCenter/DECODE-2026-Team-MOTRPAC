@@ -10,6 +10,7 @@ library(MotrpacRatTraining6moData)
 library(limma)
 library(htmlwidgets)
 
+
 # Import data ----
 pheno <- PHENO
 feature_to_gene <- FEATURE_TO_GENE
@@ -99,6 +100,8 @@ prot_MvF_SED <- topTable(
 write_csv(prot_MvF_SED, here("data_processed", "heart_proteomics_da.csv"))
 
 prot_MvF_SED <- read_csv(here("data_processed", "heart_proteomics_da.csv"))
+
+
 # Volcano plot ----
 fdr_cutoff <- 0.05
 
@@ -150,8 +153,6 @@ prot_MvF_SED_volcano <- ggplot(data = prot_MvF_SED_volcano_df,
   theme(panel.grid = element_line(color = "grey75", linewidth = 0.2)) +
   labs(title = "Sedentary male vs female HEART protein expression",
        subtitle = direction_counts,
-       x = expression(log[2] * "(fold change): Male - Female"),
-       y = expression(-log[10] * "(BH-adjusted p-value)"),
        color = NULL)
 
 prot_MvF_SED_volcano
@@ -159,22 +160,26 @@ prot_MvF_SED_volcano
 
 ## Add gene labels -----
 prot_MvF_SED_volcano_labels <- prot_MvF_SED_volcano_df %>%
-  filter(neg_log10_fdr > 5, abs(logFC) > 0.5)   # adjust thresholds based on your data's spread
+  filter(neg_log10_fdr > 5, abs(logFC) > 1)   # adjust thresholds based on your data's spread
 
 prot_MvF_SED_volcano +
   geom_label_repel(data = prot_MvF_SED_volcano_labels,
                    mapping = aes(label = feature_label), color = "black",
                    size = 3, min.segment.length = 0, box.padding = 0.5,
                    label.padding = 0.2, label.size = 0.2,
-                   max.overlaps = Inf, show.legend = FALSE)
+                   max.overlaps = Inf, show.legend = FALSE) +
+  labs(x = expression(log[2] * "(fold change): Male - Female"),
+       y = expression(-log[10] * "(BH-adjusted p-value)"),)
 
-ggsave(path = here("plots"), filename = "heart_prot_MvF_SED_volcano.png",
+ggsave(path = here("plots"), filename = "heart_protein_MvF_SED_volcano.png",
        width = 6.5, height = 5, unit = "in", dpi = 300, bg = "white")
 
 
 ### Create plotly ----
 prot_MvF_SED_volcano_plotly <- plotly::ggplotly(
-  prot_MvF_SED_volcano,
+  prot_MvF_SED_volcano +
+    labs(x = "log2(fold change): Male - Female",
+         y = "-log10(BH-adjusted p-value)"),
   tooltip = "text"
 )
 
@@ -185,3 +190,8 @@ htmlwidgets::saveWidget(
   file = here("plots", "heart_prot_MvF_SED_volcano_plotly.html"),
   selfcontained = TRUE
 )
+
+
+
+# Clear environment ----
+rm(list = ls())
