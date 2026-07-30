@@ -2,219 +2,114 @@
 
 ## Project Snapshot 
 
-This project adapts and extends the core analytical framework used to identify sex-specific molecular differences in the published MoTrPAC rat endurance-training study of subcutaneous white adipose tissue (Many et al, 2024). Using heart tissue from the same parent study, we apply comparable methods to examine baseline male-versus-female differences and sex-specific responses to endurance exercise training.
+This project adapts and extends the core analytical framework used to identify sex-specific molecular differences in the published MoTrPAC rat endurance-training study of subcutaneous white adipose tissue (Many et al, 2024). 
 
-The planned workflow includes matched-sample review, differential analysis, and pathway enrichment using heart RNA-sequencing and global proteomics data. Additional analyses, including WGCNA, phenotype correlations, RNA–protein integration, and cardiac-disease pathway mapping, may be completed as time and data availability permit.
+Using heart tissue from the same parent study, we apply comparable methods to examine baseline male-versus-female differences and sex-specific responses to endurance exercise training. The planned workflow includes matched-sample review, differential analysis, and pathway enrichment using heart RNA-sequencing and global proteomics data. Additional analyses include weighted gene co-expression network analysis (WGCNA), phenotype correlations, RNA–protein integration, and cardiac-disease pathway mapping, as time and data availability permit.
 
 By applying a published sexual-dimorphism and exercise-training analysis framework to a different tissue, the project will evaluate whether cardiac gene expression, protein abundance, and biological pathways show shared or tissue-specific patterns. It will also produce a transparent and reusable workflow that can support technical research and broader scientific interpretation.
 
 Potential users include exercise and cardiovascular researchers, computational biologists, MoTrPAC data users, trainees, and others interested in reproducible multi-omic analysis and sex as a biological variable.
 
-## Research Question
+<br>
 
-### Problem Statement 
-Endurance exercise training (ExT) benefits cardiovascular health, but sex-specific molecular mechanisms driving cardiac adaptation remain poorly characterized. MoTrPAC generated the largest public multi-omic resource on this question, profiling 18 solid tissues and blood from male and female rats undergoing endurance training across four time points. Applying this pipeline to adipose tissue revealed profound sexual dimorphism at rest and in the dynamic response to training, with sex-specific signatures preserved or amplified with exercise. No independent replication of this sexual-dimorphism pipeline has been applied to heart tissue, despite matching data being available. 
+## Research Questions
 
-### Questions
+Endurance exercise training (ExT) benefits cardiovascular health, but sex-specific molecular mechanisms driving cardiac adaptation remain poorly characterized. MoTrPAC generated a large public multi-omic resource that could be used to address this question. Analysis of adipose tissues revealed substantial sexual dimorphism at rest and in the dynamic response to training, with sex-specific signatures preserved or amplified with exercise. No independent replication of this sexual-dimorphism pipeline has been applied to heart tissue, despite matching data being available. 
 
-Primary Research Question: 
-- Does sedentary heart tissue show sex-specific differences in gene expression and enriched pathways, similar to adipose tissue?
+**Primary Research Question: **
+- Does sedentary heart tissue show sex-specific differences in gene expression and enriched biological pathways, similar to those observed in subcutaneous white adipose tissue?
 
-Secondary Research Question: 
-- How does the cardiac transcriptomic/proteomic response to ExT differ between males and females across the 1/2/4/8-week time course?
+**Secondary Research Question: **
+- How does the cardiac transcriptomic/proteomic response to endurance exercise training differ between males and females across the 1-, 2-, 4-, and 8-week time course?
+- Do male and female hearts show distinct co-expression modules (WGCNA) linked to phenotypic measures (VO2max, body composition)?
+- Do the sex-specific pathways identified overlap with known cardiac disease pathways (e.g., hypertrophic/dilated cardiomyopathy, mitochondrial dysfunction)?
 
-### Objectives
 
-- Reproduce the baseline male-versus-female analytical workflow reported for subcutaneous white adipose tissue from Many et al. (2024).
-- Apply the same workflow to matched heart RNA-sequencing and global proteomics data.
-- Identify baseline sex differences in cardiac gene expression, protein abundance, and pathway enrichment.
-- Characterize within-sex molecular responses across the endurance-training time course.
 
-## Workflow 
+## Objectives
+
+1. Reproduce the baseline male-versus-female analytical workflow reported for WAT-SC from Many et al. (2024).
+2. Apply the same workflow to matched heart RNA-sequencing and global proteomics data.
+3. Identify baseline sex differences in cardiac gene expression, protein abundance, and pathway enrichment.
+4. Characterize within-sex molecular responses across the endurance-training time course.
+5. Explore heart co-expression modules, phenotype associations, and hub genes.
+
+
+## Analysis Strategy
 
 <p align="center">
-  <img src="images/Pipeline.svg" alt="MoTrPAC analysis workflow" width="250">
+  <img src="images/Pipeline.svg" alt="DeCoDe Institute MoTrPAC team analysis workflow" width="250">
 </p>
 
-## Set Up
+The project is organized into three related workflows:
 
-### Background Review
+**1. Reproduce the Many et al. WAT-SC analysis.**
+Follow the published data-processing, differential-analysis, pathway-enrichment, and cross-omic comparison workflow.
 
-- Read the published paper and relevant supplementary methods. https://doi.org/10.1038/s42255-023-00959-9
-- Review the original published GitHub repositories, R package vignettes, and analysis scripts. 
+**2. Apply the validated workflow to heart tissue.**
+Adapt the WAT-SC workflow to matched heart transcriptomics and proteomics data to examine baseline sex differences and exercise-training responses.
 
-### Software and Repository Setup
+**3. Conduct heart-specific exploratory analyses.**
+Use WGCNA, module–trait analysis, hub-gene identification, and Gene Ontology enrichment to characterize cardiac co-expression patterns.
 
-- Install the required R packages.
-- Python is used for selected analysis steps. These scripts may be converted to R to support a consistent analysis environment.
-- The published analysis code is available through two related MoTrPAC R packages. Scripts covering data processing and statistical analysis are provided in the `data-raw/` directory and in the package vignettes and articles for `MotrpacRatTraining6moWATData`. Additional helper functions used for analysis and figure generation are available in the companion `MotrpacRatTraining6moWAT` package. The paper’s Supplementary Methods also provides a summary of the main R and Bioconductor packages used in the workflow.
+<br>
 
-### Data Preparation
+## Project Status
 
-- Download the required MoTrPAC phenotype, transcriptomics, and proteomics files. See the raw_files folder and the file descriptions below for the specific inputs used in this project.
-- Confirm filenames, formats, and expected folder locations.
-- Review the phenotype data dictionary and sample identifiers.
-- Match samples across transcriptomic and proteomic datasets.
-- Confirm that the input files are normalized and ready for analysis.
+| Workflow                              | Purpose                                      | Status    |
+| ------------------------------------- | -------------------------------------------- | --------- |
+| Pathway reference construction        | Recreate the GO data                         | Complete  |
+| WAT-SC workflow reproduction          | Reproduce the published Many et al. analysis | Complete  |
+| Heart baseline sex-difference analysis | Compare sedentary males and females          | Clean up  |
+| Heart exercise-training response      | Compare response across training time course | To verify |
+| Heart WGCNA             | Identify co-expression modules and phenotype relationships | Complete  |
+| Cardiac-disease pathways mapping       | Relate results to cardiac disease biology   | To verify |
+| Dashboard                             | Present results interactively                | In progress |
 
-### Validation
+<br>
 
-- Update file paths for the local or cloud environment.
-- Confirm that all required packages load successfully.
-- Test that each input file can be read and contains the expected columns.
-- Run a small validation step using the published workflow.
-- Document software versions, path changes, exclusions, and other deviations from the published analysis.
-  
-### Raw Data Files and Data Dictionaries (data_raw)
 
-- **Phenotypic data file:** `motrpac_pass1b-06_pheno_viallabel_data_merged_v4.0.txt`<br>
-  **Description:** This file contains the full set of phenotypic variables collected across study animals and biospecimens. Variables include information related to animal testing, study registration, calculated measures, and specimen processing, as defined in the accompanying data dictionary. The documentation first highlights the key variables needed for basic analyses and then provides additional detail.     
-  **Documentation:** [MoTrPAC Phenotype Technical Guide](https://motrpac-data.org/technical-guides/phenotype)
+## Analysis Workflows and Methods
 
-- **Phenotypic data dictionary:** `motrpac_pass1b-06_pheno_dictionary_merged_v4.0.txt`<br>
-  **Description:** This data dictionary defines the fields included in the phenotypic data tables, along with their scope and allowable values. It is intended to make the phenotypic data easier to interpret and use in analysis.   
-**Documentation:** [MoTrPAC Phenotype Technical Guide](https://motrpac-data.org/technical-guides/phenotype)
+### 0. Pathway reference construction
+To prepare for our reproduction of the WAT-SC analysis, we reconstructed the xxx. This involves xxx.
 
-- **Processed transcriptomic data file:** `motrpac_pass1b-06_t58-heart_transcript-rna-seq_normalized-log-cpm.txt`<br>
-  **Description:** This file contains normalized RNA-sequencing measurements from rat heart tissue in the MoTrPAC PASS1B-06 endurance-training study. Gene expression is reported as log-transformed counts per million, which accounts for differences in sequencing depth across samples and reduces the influence of very large count values. The table provides sample-level gene-expression data that can be used to compare expression patterns across training groups, time points, and sexes.
+**Implementation and outputs**
 
-- **Analysis output:** `pass1b-06_t58-heart_transcript-rna-seq_training-dea-fdr_20211008.txt`<br>
-  **Description:** This file contains statistical results from a time-wise differential gene expression analysis of RNA-sequencing data generated from rat heart tissue in the MoTrPAC PASS1B-06 endurance-training study.
-
-### Ontology for Pathway Enrichment and Interpretation Step (data_msigdb)
-
--  **Ontology:** `msigdb_go_basic_2021-12-15.obo`<br>
-   **Description:** This file contains the December 15, 2021 Gene Ontology structure used to define and organize the biological-process, molecular-function, and cellular-component gene sets included in the pathway-enrichment analysis.
-
-## Methods and Provenance
-
-### Team Approach 
-
-Three team members contributed to different components of the analysis workflow. Individual names may appear in code filenames, plot filenames, and output directories to indicate the analysis component each person developed or completed.
-
-#### Differential Analysis - Jade
-
-Jade contributed to the replication and tissue-adapted differential-analysis workflow. She reviewed and followed the published WAT-SC transcriptomics code, including the data-processing, filtering, differential-analysis, and volcano-plot workflow. Her work included completing the baseline male-versus-female transcriptomic and proteomic analyses associated with Figure 2a and preparing the resulting differential-analysis outputs for downstream pathway enrichment.
-
-#### Pathway Enrichment and Cross-Omic Comparison - Viveka
-
-Viveka contributed to the article and methodology review and to the pathway-enrichment and cross-omic comparison components of the workflow. Her work included analyses supporting Figures 2b and 2c, which compare transcriptomic and proteomic pathway-enrichment results and identify pathways shared across the two omics layers. Viveka also created the dashboard. 
-
-#### WGCNA Analysis — Upama
-
-Upama led the heart transcriptomics data audit and WGCNA analysis. This work included sample and feature review, selection of the 5,000 most variable features, co-expression module construction, module–trait analysis, hub-gene identification, and Gene Ontology over-representation analysis.
-
-### Analysis Methods
-
-#### Differential Analysis Approach
-
-The differential-analysis workflow began with the published WAT-SC transcriptomics pipeline and traced the analysis from the original molecular data through sample and feature preparation, statistical testing, and volcano-plot generation. The published workflow was first reproduced using subcutaneous white adipose tissue data and then adapted to the corresponding heart transcriptomics and proteomics datasets.
-
-Baseline male-versus-female comparisons were performed using sedentary samples. Separate transcriptomic and proteomic analyses identified genes and proteins that differed between males and females. The resulting ranked differential-expression and differential-abundance results were used to generate Figure 2a-style volcano plots and served as inputs for downstream pathway-enrichment analysis.
-
-Minor differences were observed between the reproduced WAT-SC plots and the published figures. The analysis is therefore described as a reproduction and tissue adaptation of the documented analytical workflow rather than an exact recreation of every published result.
-
-Notes: 
-#### Figure 2a Replication — WAT-SC Transcriptomics
-
-To reproduce the WAT-SC transcriptomics analysis used for Figure 2a, the published GitHub workflow was followed from the original count data through differential analysis and volcano-plot generation.
-
-1. **Load the source transcriptomics data**  
-   The analysis begins with `TRNSCRPT_WATSC_RAW_COUNTS` from the `MotrpacRatTraining6moData` R package.
-
-2. **Prepare the expression data**  
-   The script `data-raw/TRNSCRPT_EXP.R` is used to prepare the transcriptomics dataset. This step includes:
-   - sample metadata and gene annotation;
-   - expression filtering;
-   - outlier removal; and
-   - covariate processing.
-
-3. **Create the processed expression object**  
-   The resulting filtered raw counts and associated metadata are saved as `data/TRNSCRPT_EXP.rda`.
-
-4. **Run differential analysis**  
-   The vignette `vignettes/WAT_DA.Rmd` performs the differential-analysis workflow. This analysis calls the `limma_full()` function from the companion MoTrPAC analysis package.
-
-5. **Save the differential-analysis results**  
-   The differential-analysis output is saved as `data/TRNSCRPT_DA.rda`.
-
-6. **Generate the volcano plots**  
-   The differential-analysis results are used by `vignettes/articles/volcano_plots.Rmd` to generate the WAT-SC transcriptomics volcano plots associated with Figure 2a.
+* script: `code/msigdb-pathway-exploration-Jade-20260729.R`
+* archived GO data from 2021-12-15: `data_msigdb/msigdb_go_basic_2021-12-15.obo`
+* subset of msigdb pathways used in our FGSEA: `data_msigdb/msigdb_pathways.rds`
 
 
 
-**Primary inputs:**
+### 1. Reproduction of the Many et al. WAT-SC analysis
 
-- [Heart normalized transcriptomics data](raw_files/motrpac_pass1b-06_t58-heart_transcript-rna-seq_normalized-log-cpm.txt)
-- [Phenotype data](raw_files/motrpac_pass1b-06_pheno_viallabel_data_merged_v4.0.txt)
-- [Phenotype data dictionary](raw_files/motrpac_pass1b-06_pheno_dictionary_merged_v4.0.txt)
+The published WAT-SC workflow was followed from the original transcriptommics and proteomics data through sample and feature preparation, statistical testing, pathway enrichment, and figure generation. The source analysis is available through two related MoTrPAC R packages (`MotrpacRatTraining6moWATData` and `MotrpacRatTraining6moWAT`). We examined data and code in both packages to recreate the workflow. This involves three main analytical steps:
 
-**Processed outputs:**
+1. Differential analysis identifies individual transcripts and proteins that differ between sedentary males and females
+2. Pathway enrichment evaluates whether transcriptomic and proteomic results identify similar sex-associated biological processes
+3. Cross-omic integration identifies pathways significantly enriched in both the RNA and protein analyses
 
-- [Heart transcriptomics differential-expression results](data_processed/heart_transcriptomics_da.csv)
-- [Heart proteomics differential-abundance results](data_processed/heart_proteomics_da.csv)
-- [WAT-SC transcriptomics differential-expression results](data_processed/watsc_transcriptomics_da.csv)
-- [WAT-SC proteomics differential-abundance results](data_processed/watsc_proteomics_da.csv)
-- [Liver transcriptomics differential-expression results](data_processed/liver_transcriptomics_da.csv)
+**Implementation and outputs**
 
-**Plots:**
-
-The plots labeled `WATSC` reproduce the published findings for subcutaneous white adipose tissue shown in Figures 2a–2c. The liver and heart plots were generated by applying the same analytical methods to those tissues, allowing the team to compare the published adipose-tissue findings with tissue-adapted results.
-
--  Figure 2a: Differential analysis identifies individual transcripts and proteins that differ between sedentary males and females.
--  Figure 2b: Pathway enrichment compares whether transcriptomic and proteomic results point to the same sex-associated biological processes.
--  Figure 2c: Cross-omic integration highlights pathways that are significantly enriched in both the RNA and protein analyses.
-
-Naming Convention Note: 
--  WATSC: Replication of the published subcutaneous white adipose tissue analysis.
--  Liver: Tissue-adapted analysis using the same methods applied to liver data.
--  Heart: Tissue-adapted analysis using the same methods applied to heart data.
+- Analysis code: `watsc_*.R` files in [`code/`](code/),
+- Rendered notebooks: [`output_notebooks/MoTrPAC_watsc-MvsF-SED.html`](output_notebooks/MoTrPAC_watsc-MvsF-SED.html)
+- Processed results: `watsc_*.csv` or `watsc_*.rds` files in [`data_processed/`](data_processed/), 
+- Figures: `watsc_*.png` or `watsc_*.html` files [`plots/`](plots/)
 
 
-### Pathway Enrichment and Cross-Omic Comparison Approach
+### 2. Heart baseline sex-different analysis
 
-The pathway-enrichment workflow began with ranked transcriptomic and proteomic results from the baseline male-versus-female differential analyses. Fast Gene Set Enrichment Analysis was used to determine whether genes or proteins associated with sex differences were concentrated within defined biological pathways.
+The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomics and proteomics datasets for male and female sedentary samples. Separate transcriptomic and proteomic differential analyses identified genes and proteins that differ between males and females. The resulting ranked differential-expression and differential-abundance results are then used as inputs for pathway-enrichment analysis and cross-omic comparison.
 
-Transcriptomic and proteomic enrichment results were compared to assess whether the two molecular layers showed similar pathway direction and strength. This supported the Figure 2b-style comparison. Pathways meeting the selected significance criteria in both omics layers were then identified to support the Figure 2c-style shared-pathway analysis.
+**Implementation and outputs**
 
-The resulting enrichment tables and saved R objects were used for pathway comparison, visualization, and biological interpretation.
+TBA after repo clean up
 
-**Inputs from differential analysis:**
 
-- [Heart transcriptomics differential-expression results](data_processed/heart_transcriptomics_da.csv)
-- [Heart proteomics differential-abundance results](data_processed/heart_proteomics_da.csv)
-- [WAT-SC transcriptomics differential-expression results](data_processed/watsc_transcriptomics_da.csv)
-- [WAT-SC proteomics differential-abundance results](data_processed/watsc_proteomics_da.csv)
+### 3. Heart WGCNA Analysis
 
-**Pathway reference:**
-
-- [Gene Ontology reference file](raw_files/msigdb_go_basic_2021-12-15.obo)
-
-**Processed outputs:**
-
-- [Heart transcriptomics FGSEA results](data_processed/heart_transcriptomics_fgsea.csv)
-- [Heart transcriptomics FGSEA R object](data_processed/heart_transcriptomics_fgsea.rds)
-- [Heart proteomics FGSEA results](data_processed/heart_prot_fgsea.csv)
-- [WAT-SC transcriptomics FGSEA R object](data_processed/watsc_transcriptomics_fgsea.rds)
-- [WAT-SC proteomics FGSEA R object](data_processed/watsc_proteomics_fgsea.rds)
-
-**Plots:**
-
-The plots labeled `WATSC` reproduce the published findings for subcutaneous white adipose tissue shown in Figures 2a–2c. The liver and heart plots were generated by applying the same analytical methods to those tissues, allowing the team to compare the published adipose-tissue findings with tissue-adapted results.
-
--  Figure 2a: Differential analysis identifies individual transcripts and proteins that differ between sedentary males and females.
--  Figure 2b: Pathway enrichment compares whether transcriptomic and proteomic results point to the same sex-associated biological processes.
--  Figure 2c: Cross-omic integration highlights pathways that are significantly enriched in both the RNA and protein analyses.
-
-Naming Convention Note: 
--  WATSC: Replication of the published subcutaneous white adipose tissue analysis.
--  Liver: Tissue-adapted analysis using the same methods applied to liver data.
--  Heart: Tissue-adapted analysis using the same methods applied to heart data.
--  
-
-#### WGCNA Analysis Approach
-
-The WGCNA analysis began with processed heart transcriptomics data and associated phenotype information. The data were first reviewed through a sample and data audit to confirm sample matching, group sizes, feature annotations, and potential outliers. This step produced a reviewed expression matrix and an analysis-ready set of phenotype traits.
+The WGCNA analysis begins with processed heart transcriptomics data and associated phenotype information. The data are reviewed to confirm sample matching, group sizes, feature annotations, and potential outliers.
 
 To reduce computational complexity and focus the network analysis on genes showing meaningful variation across samples, the 5,000 most variable transcriptomic features were selected. These features were used to construct a weighted gene co-expression network, which grouped genes with similar expression patterns into modules.
 
@@ -222,75 +117,98 @@ For each module, a module eigengene was calculated to summarize the overall expr
 
 Gene Ontology over-representation analysis was then performed using the genes assigned to each module. This final step identified enriched biological processes and supported interpretation of the molecular functions represented by the heart co-expression modules.
 
-**Data-audit inputs and outputs:**
 
-- [Heart RNA-seq sample metadata](MoTrPAC_rat_heart_data_audit/heart_rnaseq_sample_metadata.csv)
-- [Sample matching checks](MoTrPAC_rat_heart_data_audit/sample_matching_checks.csv)
-- [Sample counts by group](MoTrPAC_rat_heart_data_audit/sample_counts_by_group.csv)
-- [Outlier record](MoTrPAC_rat_heart_data_audit/official_heart_rnaseq_outliers.csv)
-- [PCA plot](MoTrPAC_rat_heart_data_audit/heart_rnaseq_pca.png)
-- [Completed audit objects](MoTrPAC_rat_heart_data_audit/rat_heart_transcriptomics_audit_objects.rds)
+**Implementation and outputs**
 
-**WGCNA inputs and outputs:**
+TBA for Heart WGCNA Analysis
 
-- [Selected 5,000 variable features](MoTrPAC_rat_heart_GitHub_WGCNA/selected_top5000_variable_features.csv)
-- [Final gene-module assignments](MoTrPAC_rat_heart_GitHub_WGCNA/official_WGCNA_modules.csv)
-- [Module eigengenes](MoTrPAC_rat_heart_GitHub_WGCNA/official_WGCNA_module_eigengenes_long.csv)
-- [Module–trait correlations](MoTrPAC_rat_heart_GitHub_WGCNA/module_trait_correlations.csv)
-- [Significant module–trait correlations](MoTrPAC_rat_heart_GitHub_WGCNA/significant_module_trait_correlations.csv)
-- [Top hub genes by module](MoTrPAC_rat_heart_GitHub_WGCNA/top10_hub_genes_per_module.csv)
-- [Official WGCNA code snapshot](MoTrPAC_rat_heart_GitHub_WGCNA/official_run_WGCNA_snapshot.R)
-- [Saved WGCNA result](MoTrPAC_rat_heart_GitHub_WGCNA/official_run_WGCNA_result.rds)
 
-**Gene Ontology module-enrichment outputs:**
+### 4. Dashboard
 
-- [Module Entrez gene lists](MoTrPAC_rat_heart_differential_expression/module_entrez_gene_lists.csv)
-- [Complete module GO results](MoTrPAC_rat_heart_differential_expression/all_module_GO_ORA_results.csv)
-- [Significant module GO results](MoTrPAC_rat_heart_differential_expression/significant_module_GO_ORA_results.csv)
-- [Module ORA summary](MoTrPAC_rat_heart_differential_expression/module_ORA_summary.csv)
-- [Top GO terms by module](MoTrPAC_rat_heart_differential_expression/top10_GO_terms_per_module.csv)
+TBA for Dashboard
 
-**WGCNA and Related Plot Folders**
 
-The WGCNA-related plots are organized into five folders that reflect the major stages of the heart transcriptomics workflow.
+<br>
 
-- **`MoTrPAC_rat_heart_data_audit`** — Contains plots used to review the heart RNA-seq data before analysis, including sample-level checks, group balance, principal component analysis, and potential outlier review.
 
-- **`MoTrPAC_rat_heart_differential_expression`** — Contains plots related to transcriptomic differential-expression analysis and baseline male-versus-female comparisons.
+## Repository Guide
 
-- **`MoTrPAC_rat_heart_transcriptomic_WGCNA`** — Contains the primary WGCNA visualizations, including network construction, module identification, module eigengenes, module–trait relationships, and hub-gene summaries.
+```text
+.
+├── code                         # R and Python analysis scripts
+├── data_raw                     # source molecular and phenotype data --- did we use this?
+├── data_msigdb                  # archived GO and MSigDB pathway reference
+├── data_processed               # df containing generated result 
+├── output_dashboard             # interactive dashboard files
+├── output_notebooks             # rendered standalone Quarto reports
+└── images                       # README and project documentation images
+```
 
-- **`MoTrPAC_rat_heart_GitHub_WGCNA_module_ORA`** — Contains Gene Ontology over-representation analysis plots used to interpret the biological functions represented by individual WGCNA modules.
 
-- **`MoTrPAC_rat_heart_GitHub_aligned_FGSEA`** — Contains pathway-level comparison plots that align FGSEA results with WGCNA findings or compare related enrichment results across analysis components.
+Have a section on naming convention --- will need to adjust after clean up
+-  WATSC: Replication of the published subcutaneous white adipose tissue analysis.
+-  Liver: Tissue-adapted analysis using the same methods applied to liver data.
+-  Heart: Tissue-adapted analysis using the same methods applied to heart data.
 
-### Dashboard
 
-### Limitations and Notes
--  The published differential-abundance analysis was reproduced using the documented methodology; however, the replication was not exact. The initial plots showed minor differences (~1%) from the published results. These variations may reflect differences in software or package versions, input-file processing, filtering criteria, statistical settings, or other implementation details.
--  For the WGCNA analysis, the 5,000 genes with the greatest variability across samples were selected from approximately 14,000 available genes. This reduced computational complexity and focused the co-expression network on genes showing the strongest variation across study samples.
 
-### External Code and AI Use 
+## Reproducing this Analysis
+
+### Background Review
+
+- Read the [published paper](https://doi.org/10.1038/s42255-023-00959-9) and relevant supplementary methods
+- Review the original published GitHub repositories, R package vignettes, and analysis scripts
+
+
+### Software Setup
+
+- Install the required R packages. Versions of packages for Analysis Workflows are included at the end of the Quarto documents (see `outputs_notebooks`) 
+- Python is used for selected analysis steps. These scripts may be converted to R to support a consistent analysis environment
+- Update file paths for the local and cloud environment as needed
+
+
+<br>
+
+
+
+## Limitations and Reflections
+-  The published differential-analysis workflow was reproduced using the documented methodology, but the reproduction was not exact. These variations may reflect differences in software or package versions, input-file processing, filtering criteria, statistical settings, or other implementation details.
+-  The WGCNA analysis selected the 5,000 genes with the greatest variability from approximately 14,000 available genes. This reduced computational complexity and focused the network on genes showing the strongest variation across study samples.
+- Some analyses remain in progress or are planned. Preliminary outputs should not be interpreted as finalized findings.
+
+<br>
+
+
+## Provenance and Team Contributions
+
+Team members contributed to different components of this project. Individual names may appear in code filenames and output directories to indicate the analysis component each person developed or completed. _Team members listed alphabetically by last name_
+
+* Xiuqi "Jade" Li: transcriptomics analysis pipeline, visualization.
+* Viveka Patil: article and methodology review, proteomics analysis pipeline, and dashboard development.
+* Upama: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
+* Sarah Myer, MPH, Data Steward, RENCI (smyer@renci.org): documentation and writing support; team facilitator.
+* Ebuka: [Role to be added.]
+
+<br>
+
+
+
+## Generative AI Disclosure
 -  Mermaid.ai was used to create the pipeline graphic in the README documentation.
 -  AI-assisted tools were used to convert Python to R.
 -  AI-assisted tools were used to help write the .html code for the dashboard.
 -  AI-assisted tools were used to edit and cross-check the README documentation, improve readability and accessibility, and help verify connections between technical steps.
 
-### Citation
+<br>
+
+
+## Citation
 Many, G.M., Sanford, J.A., Sagendorf, T.J. et al. Sexual dimorphism and the multi-omic response to exercise training in rat subcutaneous white adipose tissue. Nat Metab 6, 963–979 (2024). https://doi.org/10.1038/s42255-023-00959-9 
 
-### Software Licenses
+<br>
+
+## Software Licenses
 This repository includes original analysis code as well as code adapted from the published MoTrPAC workflow. Third-party R and Python packages remain subject to their own software licenses and should be used according to the terms provided by their developers.
 
-### Future Research Questions 
+<br>
 
-- Do male and female hearts show distinct co-expression modules (WGCNA) linked to phenotypic measures (VO2max, body composition)?
-- Do the sex-specific pathways identified overlap with known cardiac disease pathways (e.g., hypertrophic/dilated cardiomyopathy, mitochondrial dysfunction)?
-
-## Contributors and Roles
-- Xiuqi Jade Li,
-- Viveka Patil,
-- Upama
-- Sarah Myer, MPH, Data Steward, RENCI (smyer@renci.org)
-    Documentation and Writing; Team Facilitator
--  Ebuka
