@@ -134,13 +134,14 @@ To reduce computational complexity and focus the network analysis on genes showi
 
 For each module, a module eigengene was calculated to summarize the overall expression pattern of the genes assigned to that module. Module eigengenes were then evaluated in relation to sex, training status, training duration, and other available phenotype traits. Significant module–trait relationships were identified, and highly connected hub genes were selected to represent each module.
 
-Gene Ontology over-representation analysis was then performed using the genes assigned to each module. This final step identified enriched biological processes and supported interpretation of the molecular functions represented by the heart co-expression modules.
+Gene Ontology over-representation analysis was then performed using the genes assigned to each module. This final step identified enriched biological processes and supported interpretation of the molecular functions represented by the heart co-expression modules. 
 
 **Implementation and outputs**
 
 - input data: heart RNA-seq and phenotype data pulled from `MotrpacRatTraining6moData`
 - processed and output files: [`code/`](Python_files_Upama/), in the Python_files_Upama folder. This folder contains both R and Python scripts.
 - figures: grouped in folders starting with `MoTrPAC_rat_heart*` in [`plots/`](plots/)
+- drive link: https://drive.google.com/drive/folders/17yrQChPWkv6SgnYBCuWPmEEZtFaZSgLT?usp=drive_link
 
 
 ### 4. Dashboard
