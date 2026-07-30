@@ -50,7 +50,7 @@ Adapt the WAT-SC workflow to matched heart transcriptomics and proteomics data t
 Use WGCNA, module–trait analysis, hub-gene identification, and Gene Ontology enrichment to characterize cardiac co-expression patterns.
 
 <p align="center">
-  <img src="images/pipeline_lateralview.svg" alt="DeCoDe Institute MoTrPAC team analysis workflow" width="250">
+  <img src="images/pipeline_lateralview.svg" alt="DeCoDe Institute MoTrPAC team analysis workflow">
 </p>
 
 <br>
