@@ -95,9 +95,9 @@ The published WAT-SC workflow was followed from the original transcriptommics an
 
 - input data: pulled from `MotrpacRatTraining6moData`
 - analysis script: `watsc_*.R` files in [`code/`](code/),
-- stand-alone rendered notebook: [`output_notebooks/MoTrPAC_watsc-MvsF-SED.html`](output_notebooks/MoTrPAC_watsc-MvsF-SED.html)
 - processed results: `watsc_*.csv` or `watsc_*.rds` files in [`data_processed/`](data_processed/), 
 - figures: `watsc_*.png` or `watsc_*.html` files [`plots/`](plots/)
+- **stand-alone rendered notebook**: [`output_notebooks/MoTrPAC_watsc-MvsF-SED.html`](output_notebooks/MoTrPAC_watsc-MvsF-SED.html)
 
 
 ### 2. Heart baseline sex-difference analysis
@@ -108,10 +108,9 @@ The WAT-SC analytical pipeline was adapted to corresponding heart transcriptomic
 
 - input data: pulled from `MotrpacRatTraining6moData`
 - analysis script: `heart_*.R` files in [`code/`](code/),
-- stand-alone rendered notebook: [`output_notebooks/MoTrPAC_heart-MvsF-SED.html`](output_notebooks/MoTrPAC_heart-MvsF-SED.html)
 - processed results: `heart_*.csv` or `heart_*.rds` files in [`data_processed/`](data_processed/), 
 - figures: `heart_*.png` or `heart_*.html` files [`plots/`](plots/)
-
+- **stand-alone rendered notebook**: [`output_notebooks/MoTrPAC_heart-MvsF-SED.html`](output_notebooks/MoTrPAC_heart-MvsF-SED.html)
 
 ### 3. Heart WGCNA Analysis
 
