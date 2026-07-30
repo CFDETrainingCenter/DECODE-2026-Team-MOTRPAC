@@ -1,5 +1,7 @@
 MIT License
 
+Copyright (c) 2022 MotrpacRatTraining6moData authors
+Copyright (c) 2023 MotrpacRatTraining6moWAT authors
 Copyright (c) 2026 DeCoDe 2026 Team MoTrPAC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

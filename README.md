@@ -192,9 +192,7 @@ An interactive dashboard was developed to support interative exploration of diff
 - Python is used for selected analysis steps. These scripts may be converted to R to support a consistent analysis environment
 - Update file paths for the local and cloud environment as needed
 
-
 <br>
-
 
 
 ## Limitations and Reflections
@@ -234,7 +232,9 @@ Many, G.M., Sanford, J.A., Sagendorf, T.J. et al. Sexual dimorphism and the mult
 <br>
 
 ## Software Licenses
-This repository includes original analysis code as well as code adapted from the published MoTrPAC workflow. Third-party R and Python packages remain subject to their own software licenses and should be used according to the terms provided by their developers.
+This repository is licensed under the MIT license. As certain code snippets in this repository are derived from the  `MotrpacRatTraining6moWATData` and `MotrpacRatTraining6moWAT` packages (both under MIT licenses), we have retained the copyright notice in our `LICENSE.md` file
+
+Third-party R and Python packages remain subject to their own software licenses and should be used according to the terms provided by their developers.
 
 <br>
 
