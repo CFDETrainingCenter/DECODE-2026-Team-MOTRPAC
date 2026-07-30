@@ -64,9 +64,9 @@ Use WGCNA, module–trait analysis, hub-gene identification, and Gene Ontology e
 | WAT-SC workflow reproduction          | Reproduce the published Many et al. analysis | Complete |
 | Heart baseline sex-difference analysis | Compare sedentary males and females         | Complete |
 | Heart exercise-training response      | Compare response across training time course | Complete |
-| Heart WGCNA and ORA | Identify co-expression modules and assign biological function  | Completed |
+| Heart WGCNA and ORA | Identify co-expression modules and assign biological function  | Complete |
 | Cardiac-disease pathways mapping       | Relate results to cardiac disease biology   | Not started |
-| Dashboard                             | Present results interactively                | Completed |
+| Dashboard                             | Present results interactively                | Complete |
 
 <br>
 
@@ -207,11 +207,12 @@ An interactive dashboard was developed to support interative exploration of diff
 
 Team members contributed to different components of this project. Individual names may appear in code filenames and output directories to indicate the analysis component each person developed or completed. _Team members listed alphabetically by last name_
 
+* **Upama Roy Chowdbury**: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
+* **Ebuka Ezeika**: presentation template development.
 * **Xiuqi "Jade" Li**: transcriptomics analysis pipeline, visualization (volcanoe plots and scatterplot showing cross-omic comparsion).
 * **Sarah Myer**, MPH, Data Steward, RENCI (smyer@renci.org): documentation and writing support; team facilitator.
 * **Viveka Patil**: article and methodology review, proteomics analysis pipeline, and dashboard development. (https://www.linkedin.com/in/viveka-patil-934b3123b/)
-* **Upama Roy Chowdbury**: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
-* **Ebuka Ezeika**: [Role to be added.]
+
 
 <br>
 
