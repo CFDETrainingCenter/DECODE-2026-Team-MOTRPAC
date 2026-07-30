@@ -207,7 +207,7 @@ An interactive dashboard was developed to support interative exploration of diff
 
 Team members contributed to different components of this project. Individual names may appear in code filenames and output directories to indicate the analysis component each person developed or completed. _Team members listed alphabetically by last name_
 
-* **Upama Roy Chowdbury**: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
+* **Upama Roy Chowdhury**: heart transcriptomics data audit, WGCNA co-expression, module functional enrichment, and global protein differential analysis.
 * **Ebuka Ezeika**: presentation template development.
 * **Xiuqi "Jade" Li**: transcriptomics analysis pipeline, visualization (volcanoe plots and scatterplot showing cross-omic comparsion), Quarto document generation.
 * **Sarah Myer**, MPH, Data Steward, RENCI (smyer@renci.org): documentation and writing support; team facilitator.
