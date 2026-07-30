@@ -1,4 +1,4 @@
-# DECODE-2026-Team-MOTRPAC
+# DECODE 2026 Team MOTRPAC
 
 ## Project Snapshot 
 
@@ -141,22 +141,11 @@ Gene Ontology over-representation analysis was then performed using the genes as
 - input data: heart RNA-seq and phenotype data pulled from `MotrpacRatTraining6moData`
 - processed and output files: [`code/`](Python_files_Upama/), in the Python_files_Upama folder. This folder contains both R and Python scripts.
 - figures: grouped in folders starting with `MoTrPAC_rat_heart*` in [`plots/`](plots/)
-- #### Main analysis scripts
-1. **Differential expression:** `02_rat_heart_differential_expression.R`  
-   Performs the heart transcriptomics differential-expression analysis.
-2. **Aligned FGSEA:** `03_rat_heart_GitHub_aligned_FGSEA_FINAL.R`  
-   Performs pathway-enrichment analysis using the differential-expression results and prepares aligned pathway-level outputs.
-3. **WGCNA:** `04_rat_heart_GitHub_WGCNA_top5000_FIXED.R`  
-   Constructs the heart transcriptomic co-expression network using the 5,000 most variable features.
-4. **WGCNA module functional enrichment:** `05_rat_heart_GitHub_WGCNA_module_ORA_FIXED.R`  
-   Performs Gene Ontology over-representation analysis for genes assigned to WGCNA modules.
-5. **Global proteomics analysis:** `06_rat_heart_GitHub_global_proteomics_NO_METAP_FIXED.R`  
-   Performs the global heart proteomics analysis used for downstream pathway and cross-omic work.
 
 
 ### 4. Dashboard
 
-An interactive dashboard is in development to support exploration of differential-analysis, pathway-enrichment, and cross-omic results. 
+An interactive dashboard is in development to support exploration of differential-analysis, pathway-enrichment, and cross-omic results. [Add brief instructions on how to use the dashboard? e.g., download HTML localy, upload csv file from within `data_processed`]
 
 **Implementation and outputs**
 
